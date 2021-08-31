@@ -1,0 +1,42 @@
+bool rot_dir, rot_flag;
+bool hold_flag;
+uint32_t timer;
+
+void setup() {
+  pinMode(A1, INPUT);
+  pinMode(A2, INPUT);
+  pinMode(A3, INPUT);
+  Serial.begin(9600);
+  PCMSK1 |= 0b00001010;
+  PCICR |= (1 << 1);
+
+}
+
+void loop() {
+  if (rot_flag) {
+    Serial.println(rot_dir ? "right" : "left");
+    rot_flag = false;
+  }
+
+  if (hold_flag && millis() - timer > 500) {
+    Serial.println("hold");
+    hold_flag = false;
+  }
+}
+
+ISR(PCINT1_vect) {
+  if (digitalRead(A1) == false) {
+    rot_dir = digitalRead(A2);
+    rot_flag = true;
+  }
+
+  bool btn_state = digitalRead(A3);
+  if (!btn_state) {
+    timer = millis();
+    hold_flag = true;
+  }
+  else if (hold_flag && btn_state) {
+    Serial.println("click");
+    hold_flag = false;
+  }
+}
