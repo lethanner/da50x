@@ -7,7 +7,6 @@
 */
 
 #include <Arduino.h>
-#include <SPI.h>
 #include <avr/io.h>
 // сигналы на выходе регистра
 #define AMP_STANDBY 0
@@ -43,7 +42,7 @@ inline void spiRegisterInit() {
 }
 
 // задать состояние вывода внешнего регистра
-void shiftWrite(uint8_t pin, bool state) {
+void extWrite(uint8_t pin, bool state) {
     bitWrite(_shiftreg_buffer, pin, state);
     _spiSendBuffer();
 }

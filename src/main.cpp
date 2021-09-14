@@ -6,68 +6,85 @@
 */
 
 #include <Arduino.h>
-#include "freememory.h"
-#include "LTUI.h"
+#include "config.h"
+#include "defines.h"
+#include "localization.h"
+//#include "freememory.h"
+#include "UI.h"
 #include "bitmaps.h"
 //#include <spiregister.h>
 
-bool ctrl_update, hold_flag;
-uint8_t ctrl_cache;
+// глобальные переменные для ручки управления
+bool enc_s2;
+uint8_t ctrl_state;
 uint32_t hold_timer;
-LTUI ui;
+// классы
+UI ui;
+
+void emptyHandler(byte selection) {
+
+}
+
+void testHandler(byte selection) {
+  switch (selection) {
+    case 0:
+      ui.createMenu("Рус. яз.", namea, emptyHandler);
+      break;
+    case 1:
+      ui.createMenu("Test submenu", nameb, emptyHandler);
+      break;
+  }
+}
 
 void setup() {
-  Serial.begin(115200);
-  Serial.println(memoryFree());
   ui.init();
+  Wire.setClock(I2C_SPEED_HZ);
   ui.clear();
-  Serial.println(memoryFree());
   ui.drawBitmap(0, 0, logo_128x64, 128, 64);
 
-  Serial.println(memoryFree());
   pinMode(A0, INPUT);
   pinMode(A1, INPUT);
   pinMode(A2, INPUT);
   PCMSK1 |= 0b00000101;
   PCICR |= (1 << 1);
-  Serial.println(memoryFree());
   delay(1000);
-  ui.clear();
+  //ui.clear();
+  ui.createMenu("Menu", names, testHandler);
 }
 
 void loop() {
-  if (ctrl_update) {
-    // кнопка
-    static bool button_last_state;
-    bool btn_state = !((ctrl_cache >> 2) & 0x01);
-    if (btn_state != button_last_state) {
-      if (btn_state) {
-        hold_timer = millis();
-        hold_flag = true;
-      } else if (hold_flag && !btn_state) {
-        ui.click();
-        hold_flag = false;
-      }
-      button_last_state = btn_state;
-    } else { // энкодер
-      static uint8_t count;
-      uint8_t enc_state = ctrl_cache & 0x03;
-      if (enc_state == 0b11) count++;
-      else if (enc_state == 0b01) count--;
-      count = constrain(count, 0, 100);
-      ui.renderScale(count);
+  // обработка сигналов с ручки управления
+  if (ctrl_state > 0) {
+    if (ctrl_state == CTRL_CLICK)
+      ui.click();
+    else if (ctrl_state == CTRL_ROTATING) {
+      ui.rotate(enc_s2);
     }
-    ctrl_update = false;
+    if (ctrl_state != CTRL_HOLDING)
+      ctrl_state = 0;
+    else if (millis() - hold_timer > CTRL_HOLD_TIMEOUT_MS) {
+      ui.hold();
+      ctrl_state = 0;
+    }
   }
 
-  // обработка удержания кнопки
-  if (hold_flag && millis() - hold_timer > 500) {
-    ui.hold();
-    hold_flag = false;
-  }
 }
 
+// прерывание PORT CHANGE для ручки управления
 ISR(PCINT1_vect) {
-  ctrl_cache = PINC;
-  ctrl_update = true;
+  // вращение энкодера, проще простого
+  if(!digitalRead(A0)) {
+    enc_s2 = !digitalRead(A1);
+    ctrl_state = CTRL_ROTATING;
+  }
+
+  // обработка кнопки вместе с удержанием, уже посложнее
+  bool btn_state = !digitalRead(A2);
+  if (btn_state) {
+    hold_timer = millis();
+    ctrl_state = CTRL_HOLDING;
+  }
+  else if (ctrl_state == CTRL_HOLDING && !btn_state) {
+    ctrl_state = CTRL_CLICK;
+  }
 }

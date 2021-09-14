@@ -1,0 +1,3 @@
+//#define RUSSIAN
+#define CTRL_HOLD_TIMEOUT_MS 500
+#define I2C_SPEED_HZ 400000L
