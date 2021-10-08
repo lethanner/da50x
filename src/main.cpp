@@ -28,10 +28,13 @@ void emptyHandler(byte selection) {
 void testHandler(byte selection) {
   switch (selection) {
     case 0:
-      ui.createMenu("Рус. яз.", namea, emptyHandler);
+      ui.createMenu("Рус. яз.", namea, 7, emptyHandler);
       break;
     case 1:
-      ui.createMenu("Test submenu", nameb, emptyHandler);
+      ui.createMenu("Test submenu", nameb, 3, emptyHandler);
+      break;
+    default:
+      Serial.println(selection);
       break;
   }
 }
@@ -49,7 +52,7 @@ void setup() {
   PCICR |= (1 << 1);
   delay(1000);
   //ui.clear();
-  ui.createMenu("Menu", names, testHandler);
+  ui.createMenu("арМия", names, 11, testHandler);
 }
 
 void loop() {

@@ -23,8 +23,10 @@ void UI::renderScale(uint8_t value) {
 }
 
 void UI::renderMenuEntries() {
+    const byte endLine = ((menuEntryCount < 7) ? menuEntryCount + 1 : 7) + menuEntryRendererStartId;
+
     this->setCursor(0, 1);
-    for (byte line = 0; line < (menuEntryCount + 1); line++) {
+    for (byte line = menuEntryRendererStartId; line < endLine; line++) {
         char linebuffer[42];
         uint16_t ptr = pgm_read_word(&(menuEntries[line]));
         uint8_t charid = 0;
@@ -39,9 +41,9 @@ void UI::renderMenuEntries() {
     }
 }
 
-void UI::createMenu(const char *title, const char* const *entries, void (*handler)(byte)) {
-    menuChooseId = 0;
-    menuEntryCount = sizeof(entries);
+void UI::createMenu(const char *title, const char* const *entries, byte entryCount, void (*handler)(byte)) {
+    menuChooseId = 0, menuVisibleSelId = 0, menuEntryRendererStartId = 0;
+    menuEntryCount = entryCount - 1;
     menuHandler = handler;
     menuEntries = entries;
 
@@ -64,11 +66,32 @@ void UI::hold() {
     
 }
 
-void UI::rotate(bool dir) { // true - вправо
-    if (dir && menuChooseId < menuEntryCount)
-        menuChooseId++;
-    else if (!dir && menuChooseId > 0)
-        menuChooseId--;
+void UI::rotate(bool dir) {
+    if (dir) { // вправо
+        if (menuVisibleSelId < 6) {
+            if (menuVisibleSelId < menuEntryCount)
+                menuVisibleSelId++;
+            else
+                return;
+        } else {
+            if (menuEntryRendererStartId + 6 < menuEntryCount) {
+                menuEntryRendererStartId++;
+                this->clearMainArea();
+            } else
+                return;
+        }
+    } else { // влево
+        if (menuVisibleSelId > 0)
+            menuVisibleSelId--;
+        else {
+            if (menuEntryRendererStartId > 0) {
+                menuEntryRendererStartId--;
+                this->clearMainArea();
+            } else
+                return;
+        }
+    }
 
+    menuChooseId = menuEntryRendererStartId + menuVisibleSelId;
     this->renderMenuEntries();
 }

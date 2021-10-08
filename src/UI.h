@@ -12,7 +12,8 @@ class UI: public GyverOLED<SSD1306_128x64, OLED_NO_BUFFER> {
         UI();
         byte disp_id = 0;
         void renderScale(uint8_t value);
-        void createMenu(const char *title, const char* const *entries, void (*handler)(byte));
+        void createMenu(const char *title, const char* const *entries, byte entryCount, void (*handler)(byte));
+        void clearMainArea() { this->clear(0, 8, 127, 63); }
         //void renderQuestionScreen(const char* title, const char* text, const char* f_entry, const char* s_entry);
         // Действия ручки управления
         void click();
@@ -23,6 +24,6 @@ class UI: public GyverOLED<SSD1306_128x64, OLED_NO_BUFFER> {
         void renderMenuEntries();
         void (*menuHandler)(byte);
         const char* const *menuEntries;
-        byte menuChooseId;
+        byte menuVisibleSelId, menuEntryRendererStartId, menuChooseId;
         byte menuEntryCount;
 };
