@@ -1,9 +1,8 @@
 .pio
 .vscode
 lib/*/examples
-lib/*/doc
+lib/*/doc*
 lib/*/README.md
 lib/README
-lib/GyverOLED/src/icons*
 test
 include

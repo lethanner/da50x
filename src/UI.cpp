@@ -25,27 +25,47 @@ void UI::renderScale(uint8_t value) {
 void UI::renderMenuEntries() {
     const byte endLine = ((menuEntryCount < 7) ? menuEntryCount + 1 : 7) + menuEntryRendererStartId;
 
-    this->setCursor(0, 1);
+    uint8_t currentLine = 1;
     for (byte line = menuEntryRendererStartId; line < endLine; line++) {
         char linebuffer[42];
         uint16_t ptr = pgm_read_word(&(menuEntries[line]));
         uint8_t charid = 0;
 
+        byte flagId = 0;
+        bool mark = false;
+        if ((char)(pgm_read_byte(ptr)) == '?') {
+            ptr++;
+            mark = true;
+            flagId = pgm_read_byte(ptr++) - 65;
+        }
+
         do {
           linebuffer[charid] = (char)(pgm_read_byte(ptr++));
         } while (linebuffer[charid++] != NULL);
 
+        this->setCursor(0, currentLine);
         this->invertText(line == menuChooseId);
-        this->println(linebuffer);
+        this->print(linebuffer);
         this->invertText(0);
+
+        if (mark) {
+            this->setCursor(120, currentLine);
+            if ((*menuBoolsCache >> flagId) & 0x01) {
+                this->print('+');
+            } else {
+                this->print('-');
+            }
+        }
+        currentLine++;
     }
 }
 
-void UI::createMenu(const char *title, const char* const *entries, byte entryCount, void (*handler)(byte)) {
+void UI::createMenu(const char *title, const char* const *entries, byte entryCount, void (*handler)(byte), int* boolsCache) {
     menuChooseId = 0, menuVisibleSelId = 0, menuEntryRendererStartId = 0;
     menuEntryCount = entryCount - 1;
     menuHandler = handler;
     menuEntries = entries;
+    menuBoolsCache = boolsCache;
 
     this->clear();
 
@@ -67,31 +87,31 @@ void UI::hold() {
 }
 
 void UI::rotate(bool dir) {
-    if (dir) { // вправо
-        if (menuVisibleSelId < 6) {
-            if (menuVisibleSelId < menuEntryCount)
-                menuVisibleSelId++;
-            else
-                return;
-        } else {
-            if (menuEntryRendererStartId + 6 < menuEntryCount) {
-                menuEntryRendererStartId++;
-                this->clearMainArea();
-            } else
-                return;
-        }
-    } else { // влево
-        if (menuVisibleSelId > 0)
-            menuVisibleSelId--;
-        else {
-            if (menuEntryRendererStartId > 0) {
-                menuEntryRendererStartId--;
-                this->clearMainArea();
-            } else
-                return;
-        }
-    }
+    // if (dir) { // вправо
+    //     if (menuVisibleSelId < 6) {
+    //         if (menuVisibleSelId < menuEntryCount)
+    //             menuVisibleSelId++;
+    //         else
+    //             return;
+    //     } else {
+    //         if (menuEntryRendererStartId + 6 < menuEntryCount) {
+    //             menuEntryRendererStartId++;
+    //             this->clearMainArea();
+    //         } else
+    //             return;
+    //     }
+    // } else { // влево
+    //     if (menuVisibleSelId > 0)
+    //         menuVisibleSelId--;
+    //     else {
+    //         if (menuEntryRendererStartId > 0) {
+    //             menuEntryRendererStartId--;
+    //             this->clearMainArea();
+    //         } else
+    //             return;
+    //     }
+    // }
 
-    menuChooseId = menuEntryRendererStartId + menuVisibleSelId;
-    this->renderMenuEntries();
+    // menuChooseId = menuEntryRendererStartId + menuVisibleSelId;
+    // this->renderMenuEntries();
 }

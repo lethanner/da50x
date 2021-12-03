@@ -1,48 +1,52 @@
 /*
  * Файл для работы со сдвиговым регистром в DA50X.
- * Микросхема 74HC595, интерфейс - аппаратно ускоренный SPI.
+ * Микросхема 74HC595, интерфейс - программно-эмулированный SPI.
  * 
  * За некоторую информацию спасибо сайту narodstream:
  * https://narodstream.ru/avr-urok-25-spi-podklyuchaem-sdvigovyj-registr-74hc595/
 */
 
+#ifndef _spiregister_h
+#define _spiregister_h
+
 #include <Arduino.h>
 #include <avr/io.h>
-// сигналы на выходе регистра
-#define AMP_STANDBY 0
-#define AMP_MUTE 1
-#define DAC_ENABLE 2
-#define BT_RESET 3
-#define SIG_SHUTDOWN 4
-#define SIG_RESET 5
-#define ACT_LED 6
+#define SOFTSPI_DT_HIGH PORTB |= _BV(PB3)
+#define SOFTSPI_DT_LOW PORTB &= ~_BV(PB3)
+#define SOFTSPI_LT_HIGH PORTB |= _BV(PB4)
+#define SOFTSPI_LT_LOW PORTB &= ~_BV(PB4)
+#define SOFTSPI_CK_HIGH PORTB |= _BV(PB5)
+#define SOFTSPI_CK_LOW PORTB &= ~_BV(PB5)
 
-uint8_t _shiftreg_buffer = 0x00;
+uint8_t _shiftreg_buffer;
 
-void _spiSendBuffer() {
-    SPDR = _shiftreg_buffer;
-    while (!(SPSR & (1 << SPIF)));
-    // дёрнуть Latch на регистре
-    digitalWrite(12, HIGH);
-    digitalWrite(12, LOW);
+void _spiSendBuffer()
+{
+    SOFTSPI_LT_LOW;
+    for (byte i = 0; i < 8; i++)
+    {
+        if ((_shiftreg_buffer >> i) & 0x01)
+            SOFTSPI_DT_HIGH;
+        else
+            SOFTSPI_DT_LOW;
+
+        SOFTSPI_CK_HIGH;
+        SOFTSPI_CK_LOW;
+    }
+    SOFTSPI_LT_HIGH;
 }
 
-// инициализация шины SPI и обнуление регистра
-inline void spiRegisterInit() {
-    digitalWrite(12, LOW);
-    pinMode(12, OUTPUT); // Latch
-    pinMode(11, OUTPUT); // Data
-    pinMode(13, OUTPUT); // Clock
-
-    // режим Master, частота шины сокращена до 1 МГц во избежание потерь
-    SPCR = ((1 << SPE) | (1 << MSTR) | (1 << SPR0));
-
-    // сразу обнулить сдвиговый регистр
+// сброс регистра
+void shifterReset()
+{
+    _shiftreg_buffer = 0x00;
     _spiSendBuffer();
 }
 
 // задать состояние вывода внешнего регистра
-void extWrite(uint8_t pin, bool state) {
+void extWrite(uint8_t pin, bool state)
+{
     bitWrite(_shiftreg_buffer, pin, state);
     _spiSendBuffer();
 }
+#endif
