@@ -1,0 +1,2426 @@
+diff --git a/.gitignore b/.gitignore
+index 4931211..5297980 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -1,9 +1,8 @@
+ .pio
+ .vscode
+ lib/*/examples
+-lib/*/doc
++lib/*/doc*
+ lib/*/README.md
+ lib/README
+-lib/GyverOLED/src/icons*
+ test
+ include
+\ No newline at end of file
+diff --git a/lib/GyverOLED/src/icons_7x7.h b/lib/GyverOLED/src/icons_7x7.h
+new file mode 100644
+index 0000000..2f30dd2
+--- /dev/null
++++ b/lib/GyverOLED/src/icons_7x7.h
+@@ -0,0 +1,173 @@
++#ifndef ICONS_7X7_H
++#define ICONS_7X7_H
++
++/**
++* Icons 7x7
++*
++* Между иконками будет отступ
++* если использовать setCursor
++*
++* На Arduino не достаточно памяти для подключения (даже на Mega)
++* поэтому копируем те иконки которые нужно (смотрите скетч drawIcons)
++*/
++
++const static uint8_t icons_7x7[][7] PROGMEM = {
++    {0x7f, 0x45, 0x49, 0x51, 0x49, 0x45, 0x7f}, //0 email
++    {0x3e, 0x6f, 0x51, 0x01, 0x71, 0x7f, 0x3e}, //1 github
++    {0x40, 0x60, 0x77, 0x77, 0x77, 0x60, 0x40}, //2 user
++    {0x70, 0x7e, 0x71, 0x51, 0x71, 0x7e, 0x70}, //3 lock, password
++    {0x08, 0x3e, 0x36, 0x63, 0x36, 0x3e, 0x08}, //4 cog, settings
++    {0x3e, 0x63, 0x41, 0x4d, 0x49, 0x63, 0x3e}, //5 clock
++    {0x0e, 0x11, 0x11, 0x11, 0x3e, 0x60, 0x40}, //6 search
++    {0x7e, 0x3f, 0x15, 0x15, 0x1d, 0x1f, 0x0e}, //7 message
++    {0x00, 0x22, 0x14, 0x7f, 0x49, 0x36, 0x00}, //8 bluetooth
++    {0x1c, 0x3e, 0x3e, 0x3e, 0x3e, 0x3e, 0x3e}, //9 battery 100%
++    {0x1c, 0x3e, 0x22, 0x3e, 0x3e, 0x3e, 0x3e}, //10 battery 75%
++    {0x1c, 0x3e, 0x22, 0x22, 0x3e, 0x3e, 0x3e}, //11 battery 50%
++    {0x1c, 0x3e, 0x22, 0x22, 0x22, 0x3e, 0x3e}, //12 battery 25%
++    {0x1c, 0x3e, 0x22, 0x22, 0x22, 0x22, 0x3e}, //13 battery 0%
++    {0x77, 0x41, 0x41, 0x00, 0x41, 0x41, 0x77}, //14 full screen
++    {0x22, 0x63, 0x00, 0x00, 0x00, 0x63, 0x22}, //15 small screen
++    {0x02, 0x7a, 0x4b, 0x7b, 0x4b, 0x7a, 0x02}, //16 trash, remove, delete
++    {0x3c, 0x42, 0x43, 0x52, 0x53, 0x42, 0x3c}, //17 calendar
++    {0x3e, 0x41, 0x5d, 0x58, 0x54, 0x42, 0x31}, //18 minimize
++    {0x3e, 0x41, 0x41, 0x48, 0x45, 0x43, 0x37}, //19 maximize
++    {0x3c, 0x24, 0x77, 0x55, 0x77, 0x24, 0x3c}, //20 printer
++    {0x1c, 0x1c, 0x1c, 0x22, 0x77, 0x77, 0x77}, //21 share
++    {0x0c, 0x1e, 0x3b, 0x71, 0x3b, 0x1e, 0x0c}, //22 map
++    {0x6c, 0x47, 0x6d, 0x6d, 0x6d, 0x47, 0x6c}, //23 case
++    {0x70, 0x7c, 0x7e, 0x53, 0x7e, 0x7c, 0x70}, //24 warning
++    {0x1c, 0x3e, 0x77, 0x77, 0x77, 0x3e, 0x1c}, //25 error
++    {0x3e, 0x41, 0x5d, 0x5d, 0x5d, 0x41, 0x3e}, //26 record
++    {0x7f, 0x7f, 0x3e, 0x3e, 0x1c, 0x1c, 0x08}, //27 play
++    {0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f}, //28 stop
++    {0x00, 0x7f, 0x7f, 0x00, 0x7f, 0x7f, 0x00}, //29 pause
++    {0x7f, 0x3e, 0x1c, 0x00, 0x7f, 0x3e, 0x1c}, //30 forward
++    {0x1c, 0x3e, 0x7f, 0x00, 0x1c, 0x3e, 0x7f}, //31 backward
++    {0x03, 0x07, 0x0f, 0x7f, 0x0f, 0x07, 0x03}, //32 filter
++    {0x03, 0x05, 0x09, 0x71, 0x09, 0x05, 0x03}, //33 filter out
++    {0x1c, 0x3e, 0x7f, 0x00, 0x08, 0x22, 0x1c}, //34 sound 100%
++    {0x1c, 0x3e, 0x7f, 0x00, 0x1c, 0x00, 0x00}, //35 sound 50%
++    {0x1c, 0x3e, 0x7f, 0x00, 0x00, 0x00, 0x00}, //36 sound 0%
++    {0x01, 0x02, 0x1c, 0x3e, 0x7f, 0x20, 0x40}, //37 sound off
++    {0x70, 0x44, 0x48, 0x5f, 0x48, 0x44, 0x70}, //38 download
++    {0x70, 0x44, 0x42, 0x5f, 0x42, 0x44, 0x70}, //39 upload
++    {0x3e, 0x41, 0x41, 0x4f, 0x49, 0x4a, 0x3c}, //40 text upload
++    {0x70, 0x48, 0x50, 0x2a, 0x05, 0x09, 0x07}, //41 link
++    {0x70, 0x48, 0x44, 0x26, 0x19, 0x0a, 0x04}, //42 pencil
++    {0x7e, 0x3f, 0x1f, 0x0f, 0x1f, 0x3f, 0x7e}, //43 bookmark
++    {0x08, 0x4c, 0x6e, 0x7f, 0x3b, 0x19, 0x08}, //44 flash, lighting
++    {0x3e, 0x41, 0x49, 0x55, 0x55, 0x51, 0x4e}, //45 attach
++    {0x0e, 0x1f, 0x3e, 0x7c, 0x3e, 0x1f, 0x0e}, //46 heart
++    {0x0e, 0x11, 0x22, 0x44, 0x22, 0x11, 0x0e}, //47 heart out
++    {0x32, 0x33, 0x33, 0x7f, 0x33, 0x33, 0x23}, //48 direction
++    {0x08, 0x14, 0x22, 0x2a, 0x22, 0x14, 0x08}, //49 eye, visible
++    {0x02, 0x05, 0x09, 0x7f, 0x09, 0x05, 0x02}, //50 antenna
++    {0x60, 0x00, 0x70, 0x00, 0x7c, 0x00, 0x7f}, //51 mobile network 100%
++    {0x60, 0x00, 0x70, 0x00, 0x7c, 0x00, 0x40}, //52 mobile network 75%
++    {0x60, 0x00, 0x70, 0x00, 0x40, 0x00, 0x40}, //53 mobile network 50%
++    {0x60, 0x00, 0x40, 0x00, 0x40, 0x00, 0x40}, //54 mobile network 25%
++    {0x40, 0x00, 0x40, 0x00, 0x40, 0x00, 0x40}, //55 mobile network 0%
++    {0x10, 0x20, 0x7f, 0x00, 0x7f, 0x02, 0x04}, //56 sync
++    {0x3e, 0x3e, 0x3e, 0x1c, 0x08, 0x1c, 0x3e}, //57 video
++    {0x02, 0x09, 0x25, 0x15, 0x25, 0x09, 0x02}, //58 wifi
++    {0x38, 0x44, 0x42, 0x52, 0x4c, 0x48, 0x30}, //59 cloud
++    {0x01, 0x0a, 0x78, 0x7b, 0x78, 0x0a, 0x01}, //60 flashlight on
++    {0x00, 0x08, 0x78, 0x48, 0x78, 0x08, 0x00}, //61 flashlight off
++    {0x38, 0x26, 0x61, 0x61, 0x61, 0x26, 0x38}, //62 bell
++    {0x70, 0x7e, 0x71, 0x51, 0x71, 0x72, 0x70}, //63 unlock
++    {0x1c, 0x00, 0x7f, 0x41, 0x7f, 0x00, 0x1c}, //64 vibrate
++    {0x3e, 0x41, 0x49, 0x51, 0x49, 0x44, 0x32}, //65 checked
++    {0x3e, 0x41, 0x41, 0x41, 0x41, 0x41, 0x3e}, //66 unchecked
++    {0x2a, 0x00, 0x7f, 0x41, 0x7f, 0x00, 0x2a}, //67 chip
++    {0x28, 0x28, 0x7d, 0x42, 0x7d, 0x28, 0x28}, //68 bug
++    {0x7f, 0x49, 0x69, 0x69, 0x69, 0x4a, 0x7c}, //69 save
++    {0x7e, 0x52, 0x4a, 0x4a, 0x6c, 0x18, 0x08}, //70 open
++    {0x60, 0x70, 0x3e, 0x19, 0x11, 0x10, 0x0c}, //71 tool
++    {0x7f, 0x75, 0x5b, 0x5f, 0x5f, 0x5f, 0x7f}, //72 console
++    {0x49, 0x49, 0x00, 0x49, 0x49, 0x49, 0x49}, //73 todo, list
++    {0x77, 0x77, 0x77, 0x00, 0x72, 0x77, 0x72}, //74 apps
++    {0x71, 0x4a, 0x64, 0x44, 0x64, 0x4a, 0x71}, //75 android
++    {0x00, 0x06, 0x39, 0x51, 0x39, 0x06, 0x00}, //76 bulb
++    {0x3e, 0x41, 0x49, 0x08, 0x2a, 0x1c, 0x08}, //77 logout
++    {0x08, 0x2a, 0x1c, 0x49, 0x41, 0x41, 0x3e}, //78 login
++    {0x3e, 0x41, 0x49, 0x5d, 0x49, 0x61, 0x7e}, //79 zoom in
++    {0x3e, 0x41, 0x49, 0x49, 0x69, 0x71, 0x7e}, //80 zoom out
++    {0x7f, 0x7f, 0x7f, 0x00, 0x77, 0x77, 0x77}, //81 dashboard
++    {0x63, 0x49, 0x1c, 0x3e, 0x1c, 0x49, 0x63}, //82 all out
++    {0x60, 0x70, 0x79, 0x7f, 0x79, 0x70, 0x60}, //83 science
++    {0x1c, 0x22, 0x51, 0x49, 0x45, 0x22, 0x1c}, //84 block
++    {0x3f, 0x42, 0x54, 0x44, 0x54, 0x42, 0x3f}, //85 cat, fox
++    {0x02, 0x05, 0x02, 0x38, 0x44, 0x44, 0x28}, //86 celsius
++    {0x02, 0x05, 0x02, 0x08, 0x7c, 0x48, 0x60}, //87 temperature
++    {0x02, 0x05, 0x02, 0x7c, 0x10, 0x28, 0x44}, //88 kelvin
++    {0x14, 0x14, 0x7f, 0x14, 0x7f, 0x14, 0x14}, //89 tag
++    {0x00, 0x41, 0x63, 0x36, 0x1c, 0x08, 0x00}, //90 chevron right
++    {0x00, 0x08, 0x1c, 0x36, 0x63, 0x41, 0x00}, //91 chevron left
++    {0x30, 0x18, 0x0c, 0x06, 0x0c, 0x18, 0x30}, //92 chevron up
++    {0x06, 0x0c, 0x18, 0x30, 0x18, 0x0c, 0x06}, //93 chevron down
++    {0x00, 0x30, 0x48, 0x48, 0x3f, 0x00, 0x00}, //94 note 1
++    {0x00, 0x30, 0x78, 0x78, 0x3f, 0x00, 0x00}, //95 note 2
++    {0x00, 0x30, 0x48, 0x48, 0x3f, 0x01, 0x00}, //96 note 3
++    {0x00, 0x30, 0x78, 0x78, 0x3f, 0x01, 0x00}, //97 note 4
++    {0x00, 0x30, 0x48, 0x48, 0x3f, 0x05, 0x00}, //98 note 5
++    {0x00, 0x30, 0x78, 0x78, 0x3f, 0x05, 0x00}, //99 note 6
++    {0x3f, 0x41, 0x41, 0x41, 0x3f, 0x12, 0x0e}, //100 cup empty
++    {0x3f, 0x61, 0x61, 0x61, 0x3f, 0x12, 0x0e}, //101 cup 20%
++    {0x3f, 0x71, 0x71, 0x71, 0x3f, 0x12, 0x0e}, //102 cup 40%
++    {0x3f, 0x79, 0x79, 0x79, 0x3f, 0x12, 0x0e}, //103 cup 60%
++    {0x3f, 0x7d, 0x7d, 0x7d, 0x3f, 0x12, 0x0e}, //104 cup 80%
++    {0x3f, 0x7f, 0x7f, 0x7f, 0x3f, 0x12, 0x0e}, //105 cup 100%
++    {0x07, 0x09, 0x51, 0x71, 0x51, 0x09, 0x07}, //106 wine class
++    {0x07, 0x39, 0x41, 0x41, 0x41, 0x39, 0x07}, //107 glass
++    {0x04, 0x06, 0x7f, 0x7f, 0x7f, 0x02, 0x07}, //108 hammer
++    {0x7f, 0x41, 0x41, 0x42, 0x42, 0x42, 0x7c}, //109 folder outline
++    {0x7f, 0x7f, 0x7f, 0x7e, 0x7e, 0x7e, 0x7c}, //110 folder
++    {0x7f, 0x41, 0x41, 0x52, 0x7a, 0x52, 0x7c}, //111 add folder
++    {0x0c, 0x18, 0x10, 0x77, 0x10, 0x18, 0x0c}, //112 microphone
++    {0x70, 0x00, 0x7f, 0x00, 0x7c, 0x00, 0x7e}, //113 equalizer
++    {0x7f, 0x7f, 0x3e, 0x1c, 0x08, 0x00, 0x7f}, //114 next
++    {0x7f, 0x00, 0x08, 0x1c, 0x3e, 0x7f, 0x7f}, //115 prev
++    {0x1f, 0x51, 0x51, 0x71, 0x51, 0x51, 0x1f}, //116 monitor, display
++    {0x3c, 0x72, 0x71, 0x01, 0x71, 0x72, 0x3c}, //117 headset, earphones
++    {0x1c, 0x3e, 0x08, 0x08, 0x08, 0x3e, 0x1c}, //118 workout, fitness
++    {0x7f, 0x0a, 0x05, 0x0a, 0x05, 0x0a, 0x05}, //119 sport flag
++    {0x08, 0x08, 0x14, 0x63, 0x14, 0x08, 0x08}, //120 location
++    {0x60, 0x70, 0x78, 0x7c, 0x7e, 0x01, 0x5d}, //121 cellular 1
++    {0x60, 0x50, 0x48, 0x44, 0x42, 0x01, 0x5d}, //122 cellular 2
++    {0x60, 0x50, 0x48, 0x44, 0x42, 0x41, 0x7f}, //123 cellular 3
++    {0x60, 0x70, 0x78, 0x7c, 0x7e, 0x7f, 0x7f}, //124 cellular 4
++    {0x23, 0x36, 0x3c, 0x38, 0x36, 0x6f, 0x5f}, //125 cellular 5
++    {0x60, 0x70, 0x78, 0x04, 0x56, 0x27, 0x57}, //126 cellular 6
++    {0x44, 0x22, 0x22, 0x44, 0x22, 0x22, 0x44}, //127 waves
++    {0x18, 0x74, 0x52, 0x51, 0x52, 0x74, 0x18}, //128 home
++    {0x3e, 0x41, 0x55, 0x41, 0x55, 0x41, 0x3e}, //129 dice 1
++    {0x3e, 0x41, 0x45, 0x41, 0x51, 0x41, 0x3e}, //130 dice 2
++    {0x1c, 0x27, 0x24, 0x64, 0x24, 0x27, 0x1c}, //131 plug
++    {0x78, 0x44, 0x42, 0x41, 0x52, 0x44, 0x78}, //132 home 2
++    {0x70, 0x50, 0x71, 0x52, 0x54, 0x58, 0x70}, //133 radio
++    {0x14, 0x3e, 0x63, 0x2a, 0x63, 0x3e, 0x14}, //134 memory
++    {0x49, 0x5d, 0x49, 0x41, 0x51, 0x45, 0x41}, //135 gamepad
++    {0x78, 0x48, 0x6a, 0x49, 0x6d, 0x49, 0x7a}, //136 router
++    {0x3e, 0x41, 0x55, 0x61, 0x55, 0x41, 0x3e}, //137 smile 1
++    {0x3e, 0x41, 0x65, 0x51, 0x65, 0x41, 0x3e}, //138 smile 2
++    {0x3e, 0x41, 0x55, 0x51, 0x55, 0x41, 0x3e}, //139 smile 3
++    {0x3e, 0x41, 0x45, 0x51, 0x45, 0x41, 0x3e}, //140 smile 4
++    {0x3e, 0x41, 0x4d, 0x61, 0x4d, 0x41, 0x3e}, //141 smile 5
++    {0x01, 0x03, 0x7f, 0x5d, 0x55, 0x55, 0x7f}, //142 sms
++    {0x1e, 0x3f, 0x3f, 0x3f, 0x33, 0x33, 0x1e}, //143 toggle on
++    {0x1e, 0x2d, 0x2d, 0x21, 0x21, 0x21, 0x1e}, //144 toggle off
++    {0x00, 0x00, 0x7f, 0x3e, 0x1c, 0x08, 0x00}, //145 arrow type 1 right
++    {0x00, 0x08, 0x1c, 0x3e, 0x7f, 0x00, 0x00}, //146 arrow type 1 left
++    {0x04, 0x0c, 0x1c, 0x3c, 0x1c, 0x0c, 0x04}, //147 arrow type 1 down
++    {0x10, 0x18, 0x1c, 0x1e, 0x1c, 0x18, 0x10}, //148 arrow type 1 up
++    {0x08, 0x08, 0x08, 0x7f, 0x3e, 0x1c, 0x08}, //149 arrow type 2 right
++    {0x08, 0x1c, 0x3e, 0x7f, 0x08, 0x08, 0x08}, //150 arrow type 2 left
++    {0x08, 0x18, 0x38, 0x7f, 0x38, 0x18, 0x08}, //151 arrow type 2 down
++    {0x08, 0x0c, 0x0e, 0x7f, 0x0e, 0x0c, 0x08}, //152 arrow type 2 up
++    {0x02, 0x39, 0x44, 0x54, 0x44, 0x39, 0x02}, //153 alarm clock
++    {0x1c, 0x22, 0x1c, 0x08, 0x18, 0x08, 0x38}, //154 key
++};
++
++
++#endif //ICONS_7X7_H
+diff --git a/lib/GyverOLED/src/icons_8x8.h b/lib/GyverOLED/src/icons_8x8.h
+new file mode 100644
+index 0000000..5b2114e
+--- /dev/null
++++ b/lib/GyverOLED/src/icons_8x8.h
+@@ -0,0 +1,174 @@
++#ifndef ICONS_8X8_H
++#define ICONS_8X8_H
++
++
++/**
++* Icons 8x8
++*
++* Эти иконки занимают всю высоту и ширину ячейки
++* соответственно между двумя иконками подряд не будет отступа
++* если использовать setCursor
++*
++* На Arduino не достаточно памяти для подключения (даже на Mega)
++* поэтому копируем те иконки которые нужно (смотрите скетч drawIcons)
++*/
++
++const static uint8_t icons_8x8[][8] PROGMEM = {
++    {0xff, 0x85, 0x89, 0x91, 0x91, 0x89, 0x85, 0xff}, //0 email
++    {0x3c, 0x5e, 0xa3, 0x03, 0x03, 0xe3, 0x7e, 0x3c}, //1 github
++    {0x80, 0xc0, 0xe6, 0xef, 0xef, 0xe6, 0xc0, 0x80}, //2 user
++    {0xf0, 0xfe, 0xf1, 0x91, 0x91, 0xf1, 0xfe, 0xf0}, //3 lock, password
++    {0x18, 0x7e, 0x7e, 0xe7, 0xe7, 0x7e, 0x7e, 0x18}, //4 cog, settings
++    {0x3c, 0x42, 0x81, 0x9d, 0x91, 0x91, 0x42, 0x3c}, //5 clock
++    {0x1e, 0x33, 0x21, 0x21, 0x33, 0x7e, 0xe0, 0xc0}, //6 search
++    {0x7e, 0x3f, 0x15, 0x15, 0x15, 0x1d, 0x1f, 0x0e}, //7 message
++    {0x00, 0x42, 0x24, 0x18, 0xff, 0x99, 0x66, 0x00}, //8 bluetooth
++    {0x00, 0x3c, 0x7e, 0x7e, 0x7e, 0x7e, 0x7e, 0x7e},//9 battery 100%
++    {0x00, 0x3c, 0x7e, 0x42, 0x7e, 0x7e, 0x7e, 0x7e},//10 battery 75%
++    {0x00, 0x3c, 0x7e, 0x42, 0x42, 0x7e, 0x7e, 0x7e},//11 battery 50%
++    {0x00, 0x3c, 0x7e, 0x42, 0x42, 0x42, 0x7e, 0x7e},//12 battery 25%
++    {0x00, 0x3c, 0x7e, 0x42, 0x42, 0x42, 0x42, 0x7e},//13 battery 0%
++    {0xe7, 0x81, 0x81, 0x00, 0x00, 0x81, 0x81, 0xe7}, //14 full screen
++    {0x24, 0x24, 0xe7, 0x00, 0x00, 0xe7, 0x24, 0x24}, //15 small screen
++    {0x02, 0xfa, 0x8b, 0xfb, 0xfb, 0x8b, 0xfa, 0x02}, //16 trash, remove, delete
++    {0x7c, 0x82, 0x83, 0x82, 0xb2, 0xb3, 0x82, 0x7c}, //17 calendar
++    {0x7e, 0x81, 0x81, 0x9d, 0x98, 0x94, 0x82, 0x71}, //18 minimize
++    {0x7e, 0x81, 0x81, 0x91, 0x88, 0x85, 0x83, 0x77}, //19 maximize
++    {0x7c, 0x44, 0xe7, 0xa5, 0xa5, 0xe7, 0x44, 0x7c}, //20 printer
++    {0x00, 0x18, 0x18, 0x24, 0x24, 0xc3, 0xc3, 0x00}, //21 share
++    {0x1c, 0x3e, 0x73, 0xe1, 0xe1, 0x73, 0x3e, 0x1c}, //22 map
++    {0xd8, 0x88, 0xde, 0xda, 0xda, 0xde, 0x88, 0xd8}, //23 case
++    {0xe0, 0xfc, 0xfe, 0xa3, 0xfe, 0xfc, 0xe0, 0x00}, //24 warning
++    {0x3c, 0x7e, 0xe7, 0xe7, 0xe7, 0xe7, 0x7e, 0x3c}, //25 error
++    {0x3c, 0x42, 0x81, 0x99, 0x99, 0x81, 0x42, 0x3c}, //26 record
++    {0xff, 0xff, 0xff, 0x7e, 0x7e, 0x3c, 0x3c, 0x18}, //27 play
++    {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}, //28 stop
++    {0x00, 0xff, 0xff, 0x00, 0x00, 0xff, 0xff, 0x00}, //29 pause
++    {0xff, 0x7e, 0x3c, 0x18, 0xff, 0x7e, 0x3c, 0x18}, //30 forward
++    {0x18, 0x3c, 0x7e, 0xff, 0x18, 0x3c, 0x7e, 0xff}, //31 backward
++    {0x07, 0x0f, 0x1f, 0xff, 0xff, 0x1f, 0x0f, 0x07}, //32 filter
++    {0x07, 0x09, 0x11, 0xe1, 0xe1, 0x11, 0x09, 0x07}, //33 filter outline
++    {0x3c, 0x7e, 0xff, 0x00, 0x18, 0x42, 0x3c, 0x00}, //34 sound 100%
++    {0x3c, 0x7e, 0xff, 0x00, 0x18, 0x00, 0x00, 0x00}, //35 sound 50%
++    {0x3c, 0x7e, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00}, //36 sound 0%
++    {0x01, 0x02, 0x3c, 0x7e, 0xff, 0x20, 0x40, 0x80}, //37 sound off
++    {0xe0, 0x88, 0x90, 0xbf, 0xbf, 0x90, 0x88, 0xe0}, //38 download
++    {0xe0, 0x84, 0x82, 0xbf, 0xbf, 0x82, 0x84, 0xe0}, //39 upload
++    {0x7e, 0x81, 0xa1, 0xa1, 0xaf, 0xa9, 0x8a, 0x7c}, //40 text file
++    {0xf0, 0x88, 0xa0, 0x92, 0x49, 0x05, 0x11, 0x0f}, //41 link
++    {0xe0, 0x90, 0x88, 0x44, 0x26, 0x19, 0x0a, 0x04}, //42 pencil
++    {0xfe, 0x7f, 0x3f, 0x1f, 0x1f, 0x3f, 0x7f, 0xfe}, //43 bookmark
++    {0x00, 0x98, 0xdc, 0xfe, 0x7f, 0x3b, 0x19, 0x18}, //44 flash, lighting
++    {0x7e, 0x81, 0x99, 0xa5, 0xa5, 0xa5, 0xa1, 0x9e}, //45 attach
++    {0x1e, 0x3f, 0x7f, 0xfe, 0xfe, 0x7f, 0x3f, 0x1e}, //46 heart
++    {0x1e, 0x21, 0x41, 0x82, 0x82, 0x41, 0x21, 0x1e}, //47 heart outline
++    {0x72, 0x77, 0x77, 0xff, 0xff, 0x77, 0x77, 0x27}, //48 direction
++    {0x18, 0x24, 0x42, 0x5a, 0x5a, 0x42, 0x24, 0x18}, //49 eye, visible
++    {0x06, 0x09, 0x11, 0xff, 0xff, 0x11, 0x09, 0x06}, //50 antenna
++    {0x00, 0xe0, 0x00, 0xf0, 0x00, 0xfc, 0x00, 0xff}, //51 mobile network 100%
++    {0x00, 0xe0, 0x00, 0xf0, 0x00, 0xfc, 0x00, 0x80}, //52 mobile network 75%
++    {0x00, 0xe0, 0x00, 0xf0, 0x00, 0x80, 0x00, 0x80}, //53 mobile network 50%
++    {0x00, 0xe0, 0x00, 0x80, 0x00, 0x80, 0x00, 0x80}, //54 mobile network 25%
++    {0x00, 0x80, 0x00, 0x80, 0x00, 0x80, 0x00, 0x80}, //55 mobile network 0%
++    {0x20, 0x40, 0xff, 0x00, 0x00, 0xff, 0x02, 0x04}, //56 sync
++    {0x7e, 0x7e, 0x7e, 0x7e, 0x3c, 0x18, 0x3c, 0x7e}, //57 video
++    {0x02, 0x09, 0x25, 0x95, 0x95, 0x25, 0x09, 0x02}, //58 wifi
++    {0x70, 0x88, 0x84, 0x84, 0xa4, 0x98, 0x90, 0x60}, //59 cloud
++    {0x01, 0x0a, 0xf8, 0xfb, 0xf8, 0x0a, 0x01, 0x00}, //60 flashlight on
++    {0x00, 0x08, 0xf8, 0x88, 0xf8, 0x08, 0x00, 0x00}, //61 flashlight off
++    {0x70, 0x4e, 0x41, 0xc1, 0xc1, 0x41, 0x4e, 0x70}, //62 bell
++    {0xf0, 0xfe, 0xf1, 0x91, 0x91, 0xf1, 0xf2, 0xf0}, //63 unlock
++    {0x3c, 0x00, 0xff, 0x81, 0x81, 0xff, 0x00, 0x3c}, //64 vibrate
++    {0x7e, 0x81, 0x91, 0xa1, 0x91, 0x89, 0x84, 0x72}, //65 checked
++    {0x7e, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0x7e}, //66 unchecked
++    {0x54, 0x00, 0xff, 0x81, 0x81, 0xff, 0x00, 0x54}, //67 chip
++    {0x48, 0x48, 0xfd, 0x82, 0x82, 0xfd, 0x48, 0x48}, //68 bug
++    {0xff, 0x89, 0xe9, 0xa9, 0xa9, 0xe9, 0x8a, 0xfc}, //69 save
++    {0xfe, 0xa2, 0x92, 0x8a, 0x8a, 0xcc, 0x28, 0x18}, //70 open
++    {0xc0, 0xe0, 0x70, 0x3e, 0x19, 0x11, 0x10, 0x0c}, //71 tool
++    {0xff, 0xdd, 0xeb, 0xb7, 0xbf, 0xbf, 0xbf, 0xff}, //72 console
++    {0xdb, 0xdb, 0x00, 0xdb, 0xdb, 0xdb, 0xdb, 0xdb}, //73 todo, list
++    {0xe7, 0xe7, 0xe7, 0x00, 0x00, 0xe2, 0xe7, 0xe2}, //74 apps
++    {0xf1, 0x8a, 0xa4, 0x84, 0x84, 0xa4, 0x8a, 0xf1}, //75 android
++    {0x00, 0x0e, 0x71, 0xa1, 0xa1, 0x71, 0x0e, 0x00}, //76 bulb
++    {0x7e, 0x81, 0x99, 0x99, 0x18, 0x5a, 0x3c, 0x18}, //77 logout
++    {0x18, 0x18, 0x5a, 0x3c, 0x99, 0x81, 0x81, 0x7e}, //78 login
++    {0x3e, 0x41, 0x49, 0x5d, 0x49, 0x41, 0xfe, 0xc0}, //79 zoom in
++    {0x3e, 0x41, 0x49, 0x49, 0x49, 0x41, 0xfe, 0xc0}, //80 zoom out
++    {0xff, 0xff, 0xff, 0x00, 0xf7, 0xf7, 0xf7, 0xf7}, //81 dashboard
++    {0xc3, 0x99, 0x3c, 0x7e, 0x7e, 0x3c, 0x99, 0xc3}, //82 all out
++    {0xc0, 0xe0, 0xf1, 0xff, 0xff, 0xf1, 0xe0, 0xc0}, //83 science
++    {0x3c, 0x42, 0xa1, 0x91, 0x89, 0x85, 0x42, 0x3c}, //84 block
++    {0x7f, 0x82, 0xb4, 0x84, 0x84, 0xb4, 0x82, 0x7f}, //85 cat, fox
++    {0x06, 0x09, 0x09, 0x06, 0x78, 0x84, 0x84, 0x48}, //86 celsius
++    {0x06, 0x09, 0x09, 0x06, 0x08, 0xfc, 0x88, 0xc0}, //87 temperature
++    {0x06, 0x09, 0x09, 0x06, 0xf8, 0x20, 0x50, 0x88}, //88 kelvin
++    {0x24, 0x24, 0xff, 0x24, 0x24, 0xff, 0x24, 0x24}, //89 tag
++    {0x00, 0x00, 0x81, 0xc3, 0x66, 0x3c, 0x18, 0x00}, //90 chevron right
++    {0x00, 0x18, 0x3c, 0x66, 0xc3, 0x81, 0x00, 0x00}, //91 chevron left
++    {0x30, 0x18, 0x0c, 0x06, 0x06, 0x0c, 0x18, 0x30}, //92 chevron up
++    {0x0c, 0x18, 0x30, 0x60, 0x60, 0x30, 0x18, 0x0c}, //93 chevron down
++    {0x00, 0x60, 0x90, 0x90, 0x7f, 0x00, 0x00, 0x00}, //94 note 1
++    {0x00, 0x60, 0xf0, 0xf0, 0x7f, 0x00, 0x00, 0x00}, //95 note 2
++    {0x00, 0x60, 0x90, 0x90, 0x7f, 0x01, 0x01, 0x00}, //96 note 3
++    {0x00, 0x60, 0xf0, 0xf0, 0x7f, 0x01, 0x01, 0x00}, //97 note 4
++    {0x00, 0x60, 0x90, 0x90, 0x7f, 0x05, 0x05, 0x00}, //98 note 5
++    {0x00, 0x60, 0xf0, 0xf0, 0x7f, 0x05, 0x05, 0x00}, //99 note 6
++    {0x7f, 0x81, 0x81, 0x81, 0x81, 0x7f, 0x22, 0x1e}, //100 cup empty
++    {0x7f, 0xe1, 0xe1, 0xe1, 0xe1, 0x7f, 0x22, 0x1e}, //101 cup 20%
++    {0x7f, 0xf1, 0xf1, 0xf1, 0xf1, 0x7f, 0x22, 0x1e}, //102 cup 40%
++    {0x7f, 0xf9, 0xf9, 0xf9, 0xf9, 0x7f, 0x22, 0x1e}, //103 cup 60%
++    {0x7f, 0xfd, 0xfd, 0xfd, 0xfd, 0x7f, 0x22, 0x1e}, //104 cup 80%
++    {0x7f, 0xff, 0xff, 0xff, 0xff, 0x7f, 0x22, 0x1e}, //105 cup 100%
++    {0x07, 0x09, 0x91, 0xe1, 0xe1, 0x91, 0x09, 0x07}, //106 wineglass
++    {0x07, 0x19, 0xe1, 0x81, 0x81, 0xe1, 0x19, 0x07}, //107 glass
++    {0x04, 0x06, 0xff, 0xff, 0xff, 0x06, 0x0f, 0x0f}, //108 hammer
++    {0xff, 0x81, 0x81, 0x81, 0x82, 0x82, 0x82, 0xfc}, //109 folder outline
++    {0xff, 0xff, 0xff, 0xff, 0xfe, 0xfe, 0xfe, 0xfc}, //110 folder
++    {0xff, 0x81, 0x81, 0x91, 0xba, 0x92, 0x82, 0xfc}, //111 add folder
++    {0x1c, 0x30, 0x20, 0xef, 0xef, 0x20, 0x30, 0x1c}, //112 microphone
++    {0xe0, 0xe0, 0x00, 0xff, 0xff, 0x00, 0xfc, 0xfc}, //113 equalizer
++    {0xff, 0xff, 0xff, 0x7e, 0x3c, 0x18, 0x00, 0xff}, //114 next
++    {0xff, 0x00, 0x18, 0x3c, 0x7e, 0xff, 0xff, 0xff}, //115 prev
++    {0x3f, 0xa1, 0xa1, 0xe1, 0xe1, 0xa1, 0xa1, 0x3f}, //116 monitor, display
++    {0x7c, 0xe2, 0xe1, 0x01, 0x01, 0xe1, 0xe2, 0x7c}, //117 headset, earphones
++    {0x18, 0x3c, 0x7e, 0x18, 0x18, 0x7e, 0x3c, 0x18}, //118 workout, fitness
++    {0xff, 0x0a, 0x15, 0x0a, 0x15, 0x0a, 0x15, 0x0a}, //119 sport flag
++    {0x18, 0x18, 0x24, 0xc3, 0xc3, 0x24, 0x18, 0x18}, //120 location
++    {0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe, 0x01, 0xbd}, //121 cellular 1
++    {0xc0, 0xa0, 0x90, 0x88, 0x84, 0x82, 0x01, 0xbd}, //122 cellular 2
++    {0xc0, 0xa0, 0x90, 0x88, 0x84, 0x82, 0x81, 0xff}, //123 cellular 3
++    {0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe, 0xff, 0xff}, //124 cellular 4
++    {0x43, 0x66, 0x7c, 0x78, 0x74, 0x6e, 0xdf, 0xbf}, //125 cellular 5
++    {0xc0, 0xe0, 0xf0, 0xf8, 0x0c, 0xae, 0x4f, 0xaf}, //126 cellular 6
++    {0x92, 0x49, 0x49, 0x92, 0x92, 0x49, 0x49, 0x92}, //127 waves
++    {0x18, 0xf4, 0x92, 0x91, 0x91, 0x92, 0xf4, 0x18}, //128 home
++    {0x7e, 0x81, 0xa5, 0x81, 0x81, 0xa5, 0x81, 0x7e}, //129 dice 1
++    {0x7e, 0x81, 0x85, 0x81, 0x81, 0xa1, 0x81, 0x7e}, //130 dice 2
++    {0x3c, 0x44, 0x47, 0xc4, 0xc4, 0x47, 0x44, 0x3c}, //131 plug
++    {0xf8, 0x84, 0x82, 0x81, 0xb1, 0xb2, 0x84, 0xf8}, //132 home 2
++    {0xf0, 0x90, 0xf0, 0xf1, 0x92, 0x94, 0x98, 0xf0}, //133 radio
++    {0x24, 0x7e, 0xc3, 0x5a, 0x5a, 0xc3, 0x7e, 0x24}, //134 memory
++    {0x44, 0x92, 0xba, 0x92, 0x82, 0xaa, 0x82, 0x44}, //135 gamepad
++    {0x70, 0x88, 0xa8, 0x8a, 0xa9, 0x8d, 0x89, 0x72}, //136 router
++    {0x7e, 0x81, 0x95, 0xa1, 0xa1, 0x95, 0x81, 0x7e}, //137 smile 1
++    {0x7e, 0x81, 0xa5, 0x91, 0x91, 0xa5, 0x81, 0x7e}, //138 smile 2
++    {0x7e, 0x81, 0xa5, 0xa1, 0xa1, 0xa5, 0x81, 0x7e}, //139 smile 3
++    {0x7e, 0x81, 0x85, 0xb1, 0xb1, 0x85, 0x81, 0x7e}, //140 smile 4
++    {0x7e, 0x81, 0x8d, 0xe1, 0xe1, 0x8d, 0x81, 0x7e}, //141 smile 5
++    {0x01, 0x03, 0xff, 0xfb, 0xbb, 0xab, 0xab, 0xff}, //142 sms
++    {0x3c, 0x7e, 0x7e, 0x7e, 0x7e, 0x66, 0x66, 0x3c}, //143 toggle on
++    {0x3c, 0x5a, 0x5a, 0x42, 0x42, 0x42, 0x42, 0x3c}, //144 toggle off
++    {0x00, 0x00, 0xff, 0x7e, 0x3c, 0x18, 0x00, 0x00}, //145 arrow type 1 right
++    {0x00, 0x00, 0x18, 0x3c, 0x7e, 0xff, 0x00, 0x00}, //146 arrow type 1 left
++    {0x04, 0x0c, 0x1c, 0x3c, 0x3c, 0x1c, 0x0c, 0x04}, //147 arrow type 1 down
++    {0x20, 0x30, 0x38, 0x3c, 0x3c, 0x38, 0x30, 0x20}, //148 arrow type 1 up
++    {0x18, 0x18, 0x18, 0x18, 0xff, 0x7e, 0x3c, 0x18}, //149 arrow type 2 right
++    {0x18, 0x3c, 0x7e, 0xff, 0x18, 0x18, 0x18, 0x18}, //150 arrow type 2 left
++    {0x10, 0x30, 0x70, 0xff, 0xff, 0x70, 0x30, 0x10}, //151 arrow type 2 down
++    {0x08, 0x0c, 0x0e, 0xff, 0xff, 0x0e, 0x0c, 0x08}, //152 arrow type 2 up
++    {0x02, 0x79, 0x85, 0xb4, 0xa4, 0x85, 0x79, 0x02}, //153 alarm clock
++    {0x3c, 0x42, 0x42, 0x3c, 0x08, 0x18, 0x08, 0x38}, //154 key
++};
++
++#endif //ICONS_8X8_H
+diff --git a/lib/GyverTimers/.gitattributes b/lib/GyverTimers/.gitattributes
+new file mode 100644
+index 0000000..dfe0770
+--- /dev/null
++++ b/lib/GyverTimers/.gitattributes
+@@ -0,0 +1,2 @@
++# Auto detect text files and perform LF normalization
++* text=auto
+diff --git a/lib/GyverTimers/LICENSE b/lib/GyverTimers/LICENSE
+new file mode 100644
+index 0000000..353b7ee
+--- /dev/null
++++ b/lib/GyverTimers/LICENSE
+@@ -0,0 +1,21 @@
++MIT License
++
++Copyright (c) 2021 Alex
++
++Permission is hereby granted, free of charge, to any person obtaining a copy
++of this software and associated documentation files (the "Software"), to deal
++in the Software without restriction, including without limitation the rights
++to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++copies of the Software, and to permit persons to whom the Software is
++furnished to do so, subject to the following conditions:
++
++The above copyright notice and this permission notice shall be included in all
++copies or substantial portions of the Software.
++
++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++SOFTWARE.
+diff --git a/lib/GyverTimers/keywords.txt b/lib/GyverTimers/keywords.txt
+new file mode 100644
+index 0000000..d4aa136
+--- /dev/null
++++ b/lib/GyverTimers/keywords.txt
+@@ -0,0 +1,64 @@
++#######################################
++# Syntax Coloring Map For GyverTimers
++#######################################
++
++#######################################
++# Datatypes (KEYWORD1)
++#######################################
++GyverTimers	KEYWORD1
++
++Timer0	KEYWORD1
++Timer1	KEYWORD1
++Timer2	KEYWORD1
++Timer3	KEYWORD1
++Timer4	KEYWORD1
++Timer5	KEYWORD1
++
++#######################################
++# Methods and Functions (KEYWORD2)
++#######################################
++ISR	KEYWORD2
++
++ready	KEYWORD2
++setPeriod	KEYWORD2
++setFrequency	KEYWORD2
++setFrequencyFloat	KEYWORD2
++enableISR	KEYWORD2
++disableISR	KEYWORD2
++pause	KEYWORD2
++resume	KEYWORD2
++stop	KEYWORD2
++restart	KEYWORD2
++setDefault	KEYWORD2
++outputEnable	KEYWORD2
++outputDisable	KEYWORD2
++outputState	KEYWORD2
++phaseShift	KEYWORD2
++
++#######################################
++# Constants (LITERAL1)
++#######################################
++TIMER0_A	LITERAL1
++TIMER0_B	LITERAL1
++TIMER1_A	LITERAL1
++TIMER1_B	LITERAL1
++TIMER1_C	LITERAL1
++TIMER2_A	LITERAL1
++TIMER2_B	LITERAL1
++TIMER3_A	LITERAL1
++TIMER3_B	LITERAL1
++TIMER3_C	LITERAL1
++TIMER4_A	LITERAL1
++TIMER4_B	LITERAL1
++TIMER4_C	LITERAL1
++TIMER5_A	LITERAL1
++TIMER5_B	LITERAL1
++TIMER5_C	LITERAL1
++
++CHANNEL_A	LITERAL1
++CHANNEL_B	LITERAL1
++CHANNEL_C	LITERAL1
++
++TOGGLE_PIN	LITERAL1
++CLEAR_PIN	LITERAL1
++SET_PIN	LITERAL1
+\ No newline at end of file
+diff --git a/lib/GyverTimers/library.properties b/lib/GyverTimers/library.properties
+new file mode 100644
+index 0000000..3396831
+--- /dev/null
++++ b/lib/GyverTimers/library.properties
+@@ -0,0 +1,9 @@
++name=GyverTimers
++version=1.10
++author=AlexGyver <alex@alexgyver.ru>
++maintainer=AlexGyver <alex@alexgyver.ru>
++sentence=Library for control hardware timers on ATmega328p and ATmega2560
++paragraph=Library for control hardware timers on ATmega328p and ATmega2560
++category=Timing
++url=https://github.com/GyverLibs/GyverTimers
++architectures=avr
+\ No newline at end of file
+diff --git a/lib/GyverTimers/src/GyverTimers.cpp b/lib/GyverTimers/src/GyverTimers.cpp
+new file mode 100644
+index 0000000..e8b2d12
+--- /dev/null
++++ b/lib/GyverTimers/src/GyverTimers.cpp
+@@ -0,0 +1,825 @@
++#include "GyverTimers.h"
++
++// ========================== READY ==========================
++bool Timer_0::ready(uint8_t channel) {
++  bool flag = false;
++  switch (channel) {
++    case CHANNEL_A: flag = bitRead(TIFR0, OCF0A); if (flag)bitSet(TIFR0, OCF0A); break; // Return interrupt flag + clear flag
++    case CHANNEL_B: flag = bitRead(TIFR0, OCF0B); if (flag)bitSet(TIFR0, OCF0B); break;
++  }
++  return flag;
++}
++
++bool Timer_1::ready(uint8_t channel) {
++  bool flag = false;
++  switch (channel) {
++    case CHANNEL_A: flag = bitRead(TIFR1, OCF1A); if (flag)bitSet(TIFR1, OCF1A); break; // Return interrupt flag + clear flag
++    case CHANNEL_B: flag = bitRead(TIFR1, OCF1B); if (flag)bitSet(TIFR1, OCF1B); break;
++#if defined(__AVR_ATmega2560__)
++    case CHANNEL_C: flag = bitRead(TIFR1, OCF1C); if (flag)bitSet(TIFR1, OCF1C); break;
++#endif
++  }
++  return flag;
++}
++
++bool Timer_2::ready(uint8_t channel) {
++  bool flag = false;
++  switch (channel) {
++    case CHANNEL_A: flag = bitRead(TIFR2, OCF2A); if (flag)bitSet(TIFR2, OCF2A); break; // Return interrupt flag + clear flag
++    case CHANNEL_B: flag = bitRead(TIFR2, OCF2B); if (flag)bitSet(TIFR2, OCF2B); break;
++  }
++  return flag;
++}
++
++#if defined(__AVR_ATmega2560__)
++bool Timer_3::ready(uint8_t channel) {
++  bool flag = false;
++  switch (channel) {
++    case CHANNEL_A: flag = bitRead(TIFR3, OCF3A); if (flag)bitSet(TIFR3, OCF3A); break; // Return interrupt flag + clear flag
++    case CHANNEL_B: flag = bitRead(TIFR3, OCF3B); if (flag)bitSet(TIFR3, OCF3B); break;
++    case CHANNEL_C: flag = bitRead(TIFR3, OCF3C); if (flag)bitSet(TIFR3, OCF3C); break;
++  }
++  return flag;
++}
++
++bool Timer_4::ready(uint8_t channel) {
++  bool flag = false;
++  switch (channel) {
++    case CHANNEL_A: flag = bitRead(TIFR4, OCF4A); if (flag)bitSet(TIFR4, OCF4A); break; // Return interrupt flag + clear flag
++    case CHANNEL_B: flag = bitRead(TIFR4, OCF4B); if (flag)bitSet(TIFR4, OCF4B); break;
++    case CHANNEL_C: flag = bitRead(TIFR4, OCF4C); if (flag)bitSet(TIFR4, OCF4C); break;
++  }
++  return flag;
++}
++
++bool Timer_5::ready(uint8_t channel) {
++  bool flag = false;
++  switch (channel) {
++    case CHANNEL_A: flag = bitRead(TIFR5, OCF5A); if (flag)bitSet(TIFR5, OCF5A); break; // Return interrupt flag + clear flag
++    case CHANNEL_B: flag = bitRead(TIFR5, OCF5B); if (flag)bitSet(TIFR5, OCF5B); break;
++    case CHANNEL_C: flag = bitRead(TIFR5, OCF5C); if (flag)bitSet(TIFR5, OCF5C); break;
++  }
++  return flag;
++}
++#endif
++
++// ========================== OUTPUT STATE ==========================
++void Timer_0::outputState(uint8_t channel, bool state) {
++  switch (channel) {
++    case CHANNEL_A: TCCR0B = (TCCR0B & 0x7F) | (state << FOC0A); break;
++    case CHANNEL_B: TCCR0B = (TCCR0B & 0xBF) | (state << FOC0B); break;
++  }
++}
++
++void Timer_1::outputState(uint8_t channel, bool state) {
++  switch (channel) {
++    case CHANNEL_A: TCCR1C = (TCCR1C & 0x7F) | (state << FOC1A); break;
++    case CHANNEL_B: TCCR1C = (TCCR1C & 0xBF) | (state << FOC1B); break;
++#if defined(__AVR_ATmega2560__)
++    case CHANNEL_C: TCCR1C = (TCCR1C & 0xDF) | (state << FOC1C); break;
++#endif
++  }
++}
++
++void Timer_2::outputState(uint8_t channel, bool state) {
++  switch (channel) {
++    case CHANNEL_A: TCCR2B = (TCCR2B & 0x7F) | (state << FOC2A); break;
++    case CHANNEL_B: TCCR2B = (TCCR2B & 0xBF) | (state << FOC2B); break;
++  }
++}
++
++#if defined(__AVR_ATmega2560__)
++void Timer_3::outputState(uint8_t channel, bool state) {
++  switch (channel) {
++    case CHANNEL_A: TCCR3C = (TCCR3C & 0x7F) | (state << FOC3A); break;
++    case CHANNEL_B: TCCR3C = (TCCR3C & 0xBF) | (state << FOC3B); break;
++    case CHANNEL_C: TCCR3C = (TCCR3C & 0xDF) | (state << FOC3C); break;
++  }
++}
++
++void Timer_4::outputState(uint8_t channel, bool state) {
++  switch (channel) {
++    case CHANNEL_A: TCCR4C = (TCCR4C & 0x7F) | (state << FOC4A); break;
++    case CHANNEL_B: TCCR4C = (TCCR4C & 0xBF) | (state << FOC4B); break;
++    case CHANNEL_C: TCCR4C = (TCCR4C & 0xDF) | (state << FOC4C); break;
++  }
++}
++
++void Timer_5::outputState(uint8_t channel, bool state) {
++  switch (channel) {
++    case CHANNEL_A: TCCR5C = (TCCR5C & 0x7F) | (state << FOC5A); break;
++    case CHANNEL_B: TCCR5C = (TCCR5C & 0xBF) | (state << FOC5B); break;
++    case CHANNEL_C: TCCR5C = (TCCR5C & 0xDF) | (state << FOC5C); break;
++  }
++}
++#endif
++
++
++// ========================== PAUSE ==========================
++void Timer_0::pause(void) {
++  TCCR0B = (TCCR0B & 0xF8); // Clear timer clock bits
++}
++
++void Timer_1::pause(void) {
++  TCCR1B = (TCCR1B & 0xF8);
++}
++
++void Timer_2::pause(void) {
++  TCCR2B = (TCCR2B & 0xF8);
++}
++
++#if defined(__AVR_ATmega2560__)
++
++void Timer_3::pause(void) {
++  TCCR3B = (TCCR3B & 0xF8);
++}
++
++void Timer_4::pause(void) {
++  TCCR4B = (TCCR4B & 0xF8);
++}
++
++void Timer_5::pause(void) {
++  TCCR5B = (TCCR5B & 0xF8);
++}
++
++#endif
++
++// ========================== RESUME ==========================
++void Timer_0::resume(void) {
++  TCCR0B = ((TCCR0B & 0xF8) |  _timer0_clock);  // Return clock timer settings
++}
++
++void Timer_1::resume(void) {
++  TCCR1B = ((TCCR1B & 0xF8) |  _timer1_clock);
++}
++
++void Timer_2::resume(void) {
++  TCCR2B = ((TCCR2B & 0xF8) |  _timer2_clock);
++}
++
++#if defined(__AVR_ATmega2560__)
++void Timer_3::resume(void) {
++  TCCR3B = ((TCCR3B & 0xF8) |  _timer3_clock);
++}
++
++void Timer_4::resume(void) {
++  TCCR4B = ((TCCR4B & 0xF8) |  _timer4_clock);
++}
++
++void Timer_5::resume(void) {
++  TCCR5B = ((TCCR5B & 0xF8) |  _timer5_clock);
++}
++#endif
++
++
++// ========================== STOP ==========================
++void Timer_0::stop(void) {
++  Timer_0::pause();
++  TCNT0 = 0x00;             // Clear timer counter
++}
++
++void Timer_1::stop(void) {
++  Timer_1::pause();
++  TCNT1 = 0x00;
++}
++
++void Timer_2::stop(void) {
++  Timer_2::pause();
++  TCNT2 = 0x00;
++}
++
++#if defined(__AVR_ATmega2560__)
++void Timer_3::stop(void) {
++  Timer_3::pause();
++  TCNT3 = 0x00;
++}
++
++void Timer_4::stop(void) {
++  Timer_4::pause();
++  TCNT4 = 0x00;
++}
++
++void Timer_5::stop(void) {
++  Timer_5::pause();
++  TCNT5 = 0x00;
++}
++#endif
++
++
++// ========================== RESTART ==========================
++void Timer_0::restart(void) {
++  Timer_0::resume();
++  TCNT0 = 0x00;
++}
++
++void Timer_1::restart(void) {
++  Timer_1::resume();
++  TCNT1 = 0x00;
++}
++
++void Timer_2::restart(void) {
++  Timer_2::resume();
++  TCNT2 = 0x00;
++}
++
++#if defined(__AVR_ATmega2560__)
++void Timer_3::restart(void) {
++  Timer_3::resume();
++  TCNT3 = 0x00;
++}
++
++void Timer_4::restart(void) {
++  Timer_4::resume();
++  TCNT4 = 0x00;
++}
++
++void Timer_5::restart(void) {
++  Timer_5::resume();
++  TCNT5 = 0x00;
++}
++#endif
++
++
++// ========================== DISABLE ISR ==========================
++void Timer_0::disableISR(uint8_t source) {
++  TIMSK0 &= ~ (source ? (1 << OCIE0B) : (1 << OCIE0A));
++}
++
++void Timer_1::disableISR(uint8_t source) {
++  switch (source) {
++    case CHANNEL_A: TIMSK1 &= ~ (1 << OCIE1A); break;
++    case CHANNEL_B: TIMSK1 &= ~ (1 << OCIE1B); break;
++#if defined(__AVR_ATmega2560__)
++    case CHANNEL_C: TIMSK1 &= ~ (1 << OCIE1C); break;
++#endif
++  }
++}
++
++void Timer_2::disableISR(uint8_t source) {
++  TIMSK2 &= ~ (source ? (1 << OCIE2B) : (1 << OCIE2A));
++}
++
++#if defined(__AVR_ATmega2560__)
++void Timer_3::disableISR(uint8_t source) {
++  switch (source) {
++    case CHANNEL_A: TIMSK3 &= ~ (1 << OCIE3A); break;
++    case CHANNEL_B: TIMSK3 &= ~ (1 << OCIE3B); break;
++    case CHANNEL_C: TIMSK3 &= ~ (1 << OCIE3C); break;
++  }
++}
++
++void Timer_4::disableISR(uint8_t source) {
++  switch (source) {
++    case CHANNEL_A: TIMSK4 &= ~ (1 << OCIE4A); break;
++    case CHANNEL_B: TIMSK4 &= ~ (1 << OCIE4B); break;
++    case CHANNEL_C: TIMSK4 &= ~ (1 << OCIE4C); break;
++  }
++}
++
++void Timer_5::disableISR(uint8_t source) {
++  switch (source) {
++    case CHANNEL_A: TIMSK5 &= ~ (1 << OCIE5A); break;
++    case CHANNEL_B: TIMSK5 &= ~ (1 << OCIE5B); break;
++    case CHANNEL_C: TIMSK5 &= ~ (1 << OCIE5C); break;
++  }
++}
++#endif
++
++// ========================== DEFAULT ==========================
++void Timer_0::setDefault(void) {
++  TCCR0A = 0x03;  // Fast PWM , 8 bit
++  TCCR0B = 0x03;  // Prescaler /64
++  OCR0B = 0x00;   // Clear COMPA
++  OCR0A = 0x00;   // Clear COMPB
++  TCNT0 = 0x00;   // Clear counter
++}
++
++void Timer_1::setDefault(void) {
++  TCCR1A = 0x01;  // Phasecorrect PWM , 8 bit
++  TCCR1B = 0x0B;  // Prescaler /64
++  OCR1B = 0x00;   // Clear COMPA
++  OCR1A = 0x00;   // Clear COMPB
++  TCNT1 = 0x00;   // Clear counter
++}
++
++void Timer_2::setDefault(void) {
++  TCCR2A = 0x01;  // Phasecorrect PWM , 8 bit
++  TCCR2B = 0x04;  // Prescaler /64
++  OCR2B = 0x00;   // Clear COMPA
++  OCR2A = 0x00;   // Clear COMPB
++  TCNT2 = 0x00;   // Clear counter
++}
++
++
++#if defined(__AVR_ATmega2560__)
++void Timer_3::setDefault(void) {
++  TCCR3A = 0x01;  // Phasecorrect PWM , 8 bit
++  TCCR3B = 0x0B;  // Prescaler /64
++  OCR3B = 0x00;   // Clear COMPA
++  OCR3A = 0x00;   // Clear COMPB
++  TCNT3 = 0x00;   // Clear counter
++}
++
++void Timer_4::setDefault(void) {
++  TCCR4A = 0x01;  // Phasecorrect PWM , 8 bit
++  TCCR4B = 0x0B;  // Prescaler /64
++  OCR4B = 0x00;   // Clear COMPA
++  OCR4A = 0x00;   // Clear COMPB
++  TCNT4 = 0x00;   // Clear counter
++}
++
++void Timer_5::setDefault(void) {
++  TCCR5A = 0x01;  // Phasecorrect PWM , 8 bit
++  TCCR5B = 0x0B;  // Prescaler /64
++  OCR5B = 0x00;   // Clear COMPA
++  OCR5A = 0x00;   // Clear COMPB
++  TCNT5 = 0x00;   // Clear counter
++}
++#endif
++
++// ========================== PHASE SHIFT ==========================
++void Timer_0::phaseShift(uint8_t source, uint16_t phase) {
++  if (source) OCR0B = map(phase, 0, 360,  0, OCR0A);
++}
++
++void Timer_1::phaseShift(uint8_t source, uint16_t phase) {
++  switch (source) {
++    case CHANNEL_A: OCR1A = map(phase, 0, 360, 0, ICR1); break;
++    case CHANNEL_B: OCR1B = map(phase, 0, 360, 0, ICR1); break;
++#if defined(__AVR_ATmega2560__)
++    case CHANNEL_C: OCR1C = map(phase, 0, 360, 0, ICR1); break;
++#endif
++  }
++}
++
++void Timer_2::phaseShift(uint8_t source, uint16_t phase) {
++  if (source) OCR2B = map(phase, 0, 360, 0, OCR2A);
++}
++
++#if defined(__AVR_ATmega2560__)
++
++void Timer_3::phaseShift(uint8_t source, uint16_t phase) {
++  switch (source) {
++    case CHANNEL_A: OCR3A = map(phase, 0, 360, 0, ICR3); break;
++    case CHANNEL_B: OCR3B = map(phase, 0, 360, 0, ICR3); break;
++    case CHANNEL_C: OCR3C = map(phase, 0, 360, 0, ICR3); break;
++  }
++}
++
++void Timer_4::phaseShift(uint8_t source, uint16_t phase) {
++  switch (source) {
++    case CHANNEL_A: OCR4A = map(phase, 0, 360, 0, ICR4); break;
++    case CHANNEL_B: OCR4B = map(phase, 0, 360, 0, ICR4); break;
++    case CHANNEL_C: OCR4C = map(phase, 0, 360, 0, ICR4); break;
++  }
++}
++
++void Timer_5::phaseShift(uint8_t source, uint16_t phase) {
++  switch (source) {
++    case CHANNEL_A: OCR5A = map(phase, 0, 360, 0, ICR5); break;
++    case CHANNEL_B: OCR5B = map(phase, 0, 360, 0, ICR5); break;
++    case CHANNEL_C: OCR5C = map(phase, 0, 360, 0, ICR5); break;
++  }
++}
++#endif
++
++
++// ========================== ENABLE ISR ==========================
++void Timer_0::enableISR(uint8_t source) {
++  if (!source) TIMSK0 |= (1 << OCIE0A);
++  else TIMSK0 |= (1 << OCIE0B);
++}
++
++void Timer_1::enableISR(uint8_t source) {
++  switch (source) {
++    case CHANNEL_A: TIMSK1 |= (1 << OCIE1A); break;
++    case CHANNEL_B: TIMSK1 |= (1 << OCIE1B); break;
++#if defined(__AVR_ATmega2560__)
++    case CHANNEL_C: TIMSK1 |= (1 << OCIE1C); break;
++#endif
++  }
++}
++
++void Timer_2::enableISR(uint8_t source) {
++  if (!source) TIMSK2 |= (1 << OCIE2A);
++  else TIMSK2 |= (1 << OCIE2B);
++}
++
++#if defined(__AVR_ATmega2560__)
++
++void Timer_3::enableISR(uint8_t source) {
++  switch (source) {
++    case CHANNEL_A: TIMSK3 |= (1 << OCIE3A); break;
++    case CHANNEL_B: TIMSK3 |= (1 << OCIE3B); break;
++    case CHANNEL_C: TIMSK3 |= (1 << OCIE3C); break;
++  }
++}
++
++void Timer_4::enableISR(uint8_t source) {
++  switch (source) {
++    case CHANNEL_A: TIMSK4 |= (1 << OCIE4A); break;
++    case CHANNEL_B: TIMSK4 |= (1 << OCIE4B); break;
++    case CHANNEL_C: TIMSK4 |= (1 << OCIE4C); break;
++  }
++}
++
++void Timer_5::enableISR(uint8_t source) {
++  switch (source) {
++    case CHANNEL_A: TIMSK5 |= (1 << OCIE5A); break;
++    case CHANNEL_B: TIMSK5 |= (1 << OCIE5B); break;
++    case CHANNEL_C: TIMSK5 |= (1 << OCIE5C); break;
++  }
++}
++#endif
++
++// ========================== SET FREQUENCY ==========================
++uint32_t Timer_0::setFrequency(uint32_t _timer0_frequency) {
++  return 1000000UL / (Timer_0::setPeriod(1000000UL / _timer0_frequency));
++}
++
++uint32_t Timer_1::setFrequency(uint32_t _timer1_frequency) {
++  return 1000000UL / (Timer_1::setPeriod(1000000UL / _timer1_frequency));
++}
++
++uint32_t Timer_2::setFrequency(uint32_t _timer2_frequency) {
++  return 1000000UL / (Timer_2::setPeriod(1000000UL / _timer2_frequency));
++}
++
++#if defined(__AVR_ATmega2560__)
++
++uint32_t Timer_3::setFrequency(uint32_t _timer3_frequency) {
++  return 1000000UL / (Timer_3::setPeriod(1000000UL / _timer3_frequency));
++}
++
++uint32_t Timer_4::setFrequency(uint32_t _timer4_frequency) {
++  return 1000000UL / (Timer_4::setPeriod(1000000UL / _timer4_frequency));
++}
++
++uint32_t Timer_5::setFrequency(uint32_t _timer5_frequency) {
++  return 1000000UL / (Timer_5::setPeriod(1000000UL / _timer5_frequency));
++}
++
++#endif
++
++
++// ========================== SET FREQUENCY FLOAT ==========================
++float Timer_0::setFrequencyFloat(float _timer0_frequency) {
++  return 1000000.0F / (Timer_0::setPeriod(1000000.0F / _timer0_frequency));
++}
++
++float Timer_1::setFrequencyFloat(float _timer1_frequency) {
++  return 1000000.0F / (Timer_1::setPeriod(1000000.0F / _timer1_frequency));
++}
++
++float Timer_2::setFrequencyFloat(float _timer2_frequency) {
++  return 1000000.0F / (Timer_2::setPeriod(1000000.0F / _timer2_frequency));
++}
++
++#if defined(__AVR_ATmega2560__)
++
++float Timer_3::setFrequencyFloat(float _timer3_frequency) {
++  return 1000000.0F / (Timer_3::setPeriod(1000000.0F / _timer3_frequency));
++}
++
++float Timer_4::setFrequencyFloat(float _timer4_frequency) {
++  return 1000000.0F / (Timer_4::setPeriod(1000000.0F / _timer4_frequency));
++}
++
++float Timer_5::setFrequencyFloat(float _timer5_frequency) {
++  return 1000000.0F / (Timer_5::setPeriod(1000000.0F / _timer5_frequency));
++}
++
++#endif
++
++// ========================== OUTPUT ENABLE ==========================
++void Timer_0::outputEnable(uint8_t channel, uint8_t mode) {
++  switch (channel) {
++    case CHANNEL_A: TCCR0A = (TCCR0A & 0x3F) | (mode << 6); break;
++    case CHANNEL_B: TCCR0A = (TCCR0A & 0xCF) | (mode << 4); break;
++  }
++}
++
++void Timer_1::outputEnable(uint8_t channel, uint8_t mode) {
++  switch (channel) {
++    case CHANNEL_A: TCCR1A = (TCCR1A & 0x3F) | (mode << 6); break;
++    case CHANNEL_B: TCCR1A = (TCCR1A & 0xCF) | (mode << 4); break;
++#if defined(__AVR_ATmega2560__)
++    case CHANNEL_C: TCCR1A = (TCCR1A & 0xF3) | (mode << 2); break;
++#endif
++  }
++}
++
++void Timer_2::outputEnable(uint8_t channel, uint8_t mode) {
++  switch (channel) {
++    case CHANNEL_A: TCCR2A = (TCCR2A & 0x3F) | (mode << 6); break;
++    case CHANNEL_B: TCCR2A = (TCCR2A & 0xCF) | (mode << 4); break;
++  }
++}
++
++#if defined(__AVR_ATmega2560__)
++void Timer_3::outputEnable(uint8_t channel, uint8_t mode) {
++  switch (channel) {
++    case CHANNEL_A: TCCR3A = (TCCR3A & 0x3F) | (mode << 6); break;
++    case CHANNEL_B: TCCR3A = (TCCR3A & 0xCF) | (mode << 4); break;
++    case CHANNEL_C: TCCR3A = (TCCR3A & 0xF3) | (mode << 2); break;
++  }
++}
++
++void Timer_4::outputEnable(uint8_t channel, uint8_t mode) {
++  switch (channel) {
++    case CHANNEL_A: TCCR4A = (TCCR4A & 0x3F) | (mode << 6); break;
++    case CHANNEL_B: TCCR4A = (TCCR4A & 0xCF) | (mode << 4); break;
++    case CHANNEL_C: TCCR4A = (TCCR4A & 0xF3) | (mode << 2); break;
++  }
++}
++
++void Timer_5::outputEnable(uint8_t channel, uint8_t mode) {
++  switch (channel) {
++    case CHANNEL_A: TCCR5A = (TCCR5A & 0x3F) | (mode << 6); break;
++    case CHANNEL_B: TCCR5A = (TCCR5A & 0xCF) | (mode << 4); break;
++    case CHANNEL_C: TCCR5A = (TCCR5A & 0xF3) | (mode << 2); break;
++  }
++}
++#endif
++
++
++// ========================== OUTPUT DISABLE ==========================
++void Timer_0::outputDisable(uint8_t channel) {
++  switch (channel) {
++    case CHANNEL_A: TCCR0A = (TCCR0A & 0x3F); break;
++    case CHANNEL_B: TCCR0A = (TCCR0A & 0xCF); break;
++  }
++}
++
++void Timer_1::outputDisable(uint8_t channel) {
++  switch (channel) {
++    case CHANNEL_A: TCCR1A = (TCCR1A & 0x3F); break;
++    case CHANNEL_B: TCCR1A = (TCCR1A & 0xCF); break;
++#if defined(__AVR_ATmega2560__)
++    case CHANNEL_C: TCCR1A = (TCCR1A & 0xF3); break;
++#endif
++  }
++}
++
++void Timer_2::outputDisable(uint8_t channel) {
++  switch (channel) {
++    case CHANNEL_A: TCCR2A = (TCCR2A & 0x3F); break;
++    case CHANNEL_B: TCCR2A = (TCCR2A & 0xCF); break;
++  }
++}
++
++#if defined(__AVR_ATmega2560__)
++void Timer_3::outputDisable(uint8_t channel) {
++  switch (channel) {
++    case CHANNEL_A: TCCR3A = (TCCR3A & 0x3F); break;
++    case CHANNEL_B: TCCR3A = (TCCR3A & 0xCF); break;
++    case CHANNEL_C: TCCR3A = (TCCR3A & 0xF3); break;
++  }
++}
++
++void Timer_4::outputDisable(uint8_t channel) {
++  switch (channel) {
++    case CHANNEL_A: TCCR4A = (TCCR4A & 0x3F); break;
++    case CHANNEL_B: TCCR4A = (TCCR4A & 0xCF); break;
++    case CHANNEL_C: TCCR4A = (TCCR4A & 0xF3); break;
++  }
++}
++
++void Timer_5::outputDisable(uint8_t channel) {
++  switch (channel) {
++    case CHANNEL_A: TCCR5A = (TCCR5A & 0x3F); break;
++    case CHANNEL_B: TCCR5A = (TCCR5A & 0xCF); break;
++    case CHANNEL_C: TCCR5A = (TCCR5A & 0xF3); break;
++  }
++}
++#endif
++
++
++
++// ========================== SET PERIOD ==========================
++uint32_t Timer_0::setPeriod(uint32_t _timer0_period)  {
++  _timer0_period = constrain(_timer0_period, 1, MAX_PERIOD_8);
++
++  uint32_t _timer0_cycles = F_CPU / 1000000 * _timer0_period;  // Calculation of the number of timer cycles per period
++  uint8_t _timer0_prescaler = 0x00;
++  uint16_t _timer0_divider = 0x00;
++
++  if (_timer0_cycles < 256UL) {   // Сhoose optimal divider for the timer
++    _timer0_prescaler = 0x01;
++    _timer0_divider = 1UL;
++  } else if (_timer0_cycles < 256UL * 8) {
++    _timer0_prescaler = 0x02;
++    _timer0_divider = 8UL;
++  } else if (_timer0_cycles < 256UL * 64) {
++    _timer0_prescaler = 0x03;
++    _timer0_divider = 64UL;
++  } else if (_timer0_cycles < 256UL * 256) {
++    _timer0_prescaler = 0x04;
++    _timer0_divider = 256UL;
++  } else {
++    _timer0_prescaler = 0x05;
++    _timer0_divider = 1024UL;
++  }
++
++  uint8_t _timer0_top = (_timer0_cycles < 256UL * 1024 ? (_timer0_cycles / _timer0_divider) : 256UL) ;
++
++  TCCR0A = (TCCR0A & 0xF0) | (1 << WGM21); // CTC - mode
++  TCCR0B = _timer0_prescaler;         // Set timer prescaler
++  OCR0A = _timer0_top - 1;            // Set timer top
++  _timer0_clock = (TCCR0B & 0x07);      // Save timer clock settings
++
++  return (1000000UL / ((F_CPU / _timer0_divider) / _timer0_top));   // Return real timer period
++}
++
++uint32_t Timer_1::setPeriod(uint32_t _timer1_period)  {
++  _timer1_period = constrain(_timer1_period, 1, MAX_PERIOD_16);
++
++  uint32_t _timer1_cycles = F_CPU / 1000000 * _timer1_period;  // Calculation of the number of timer cycles per period
++  uint8_t _timer1_prescaler = 0x00;
++  uint16_t _timer1_divider = 0x00;
++
++  if (_timer1_cycles < 65536UL) {   // Сhoose optimal divider for the timer
++    _timer1_prescaler = 0x01;
++    _timer1_divider = 1UL;
++  } else if (_timer1_cycles < 65536UL * 8) {
++    _timer1_prescaler = 0x02;
++    _timer1_divider = 8UL;
++  } else if (_timer1_cycles < 65536UL * 64) {
++    _timer1_prescaler = 0x03;
++    _timer1_divider = 64UL;
++  } else if (_timer1_cycles < 65536UL * 256) {
++    _timer1_prescaler = 0x04;
++    _timer1_divider = 256UL;
++  } else {
++    _timer1_prescaler = 0x05;
++    _timer1_divider = 1024UL;
++  }
++
++  uint16_t _timer1_top = (_timer1_cycles < 65536UL * 1024 ? (_timer1_cycles / _timer1_divider) : 65536UL) ;
++#if defined(__AVR_ATmega2560__)
++  TCCR1A = (TCCR1A & 0xFC);
++#else
++  TCCR1A = (TCCR1A & 0xF0);
++#endif
++  TCCR1B = ((1 << WGM13) | (1 << WGM12) | _timer1_prescaler);   // CTC mode + set prescaler
++  ICR1 = _timer1_top - 1;             // Set timer top
++  _timer1_clock = (TCCR1B & 0x07);    // Save timer clock settings
++  return (1000000UL / ((F_CPU / _timer1_divider) / _timer1_top));   // Return real timer period
++}
++
++uint32_t Timer_2::setPeriod(uint32_t _timer2_period)  {
++  _timer2_period = constrain(_timer2_period, 1, MAX_PERIOD_8);
++
++  uint32_t _timer2_cycles = F_CPU / 1000000 * _timer2_period;  // Calculation of the number of timer cycles per period
++  uint8_t _timer2_prescaler = 0x00;
++  uint16_t _timer2_divider = 0x00;
++
++  if (_timer2_cycles < 256UL) {   // Сhoose optimal divider for the timer
++    _timer2_prescaler = 0x01;
++    _timer2_divider = 1UL;
++  } else if (_timer2_cycles < 256UL * 8) {
++    _timer2_prescaler = 0x02;
++    _timer2_divider = 8UL;
++  } else if (_timer2_cycles < 256UL * 32) {
++    _timer2_prescaler = 0x03;
++    _timer2_divider = 32UL;
++  } else if (_timer2_cycles < 256UL * 64) {
++    _timer2_prescaler = 0x04;
++    _timer2_divider = 64UL;
++  } else if (_timer2_cycles < 256UL * 128) {
++    _timer2_prescaler = 0x05;
++    _timer2_divider = 128UL;
++  } else if (_timer2_cycles < 256UL * 256) {
++    _timer2_prescaler = 0x06;
++    _timer2_divider = 256UL;
++  } else {
++    _timer2_prescaler = 0x07;
++    _timer2_divider = 1024UL;
++  }
++
++  uint8_t _timer2_top = (_timer2_cycles < 256UL * 1024 ? (_timer2_cycles / _timer2_divider) : 256UL);
++
++  TCCR2A = (TCCR2A & 0xF0) | (1 << WGM21);    // CTC - mode
++  TCCR2B = _timer2_prescaler;       // Set timer prescaler
++  OCR2A = _timer2_top - 1;          // Set timer top
++  _timer2_clock = (TCCR2B & 0x07);    // Save timer clock settings
++
++  return (1000000UL / ((F_CPU / _timer2_divider) / _timer2_top));   // Return real timer period
++}
++
++#if defined(__AVR_ATmega2560__)
++
++uint32_t Timer_3::setPeriod(uint32_t _timer3_period)  {
++  _timer3_period = constrain(_timer3_period, 1, MAX_PERIOD_16);
++
++  uint32_t _timer3_cycles = F_CPU / 1000000 * _timer3_period;  // Calculation of the number of timer cycles per period
++  uint8_t _timer3_prescaler = 0x00;
++  uint16_t _timer3_divider = 0x00;
++
++  if (_timer3_cycles < 65536UL) {   // Сhoose optimal divider for the timer
++    _timer3_prescaler = 0x01;
++    _timer3_divider = 1UL;
++  } else if (_timer3_cycles < 65536UL * 8) {
++    _timer3_prescaler = 0x02;
++    _timer3_divider = 8UL;
++  } else if (_timer3_cycles < 65536UL * 64) {
++    _timer3_prescaler = 0x03;
++    _timer3_divider = 64UL;
++  } else if (_timer3_cycles < 65536UL * 256) {
++    _timer3_prescaler = 0x04;
++    _timer3_divider = 256UL;
++  } else {
++    _timer3_prescaler = 0x05;
++    _timer3_divider = 1024UL;
++  }
++
++  uint16_t _timer3_top = (_timer3_cycles < 65536UL * 1024 ? (_timer3_cycles / _timer3_divider) : 65536UL) ;
++
++  TCCR3A = (TCCR3A & 0xFC);
++  TCCR3B = ((1 << WGM33) | (1 << WGM32) | _timer3_prescaler);   // CTC mode + set prescaler
++  ICR3 = _timer3_top - 1;             // Set timer top
++  _timer3_clock = (TCCR3B & 0x07);    // Save timer clock settings
++
++  return (1000000UL / ((F_CPU / _timer3_divider) / _timer3_top));   // Return real timer period
++}
++
++uint32_t Timer_4::setPeriod(uint32_t _timer4_period)  {
++  _timer4_period = constrain(_timer4_period, 1, MAX_PERIOD_16);
++
++  uint32_t _timer4_cycles = F_CPU / 1000000 * _timer4_period;  // Calculation of the number of timer cycles per period
++  uint8_t _timer4_prescaler = 0x00;
++  uint16_t _timer4_divider = 0x00;
++
++  if (_timer4_cycles < 65536UL) {   // Сhoose optimal divider for the timer
++    _timer4_prescaler = 0x01;
++    _timer4_divider = 1UL;
++  } else if (_timer4_cycles < 65536UL * 8) {
++    _timer4_prescaler = 0x02;
++    _timer4_divider = 8UL;
++  } else if (_timer4_cycles < 65536UL * 64) {
++    _timer4_prescaler = 0x03;
++    _timer4_divider = 64UL;
++  } else if (_timer4_cycles < 65536UL * 256) {
++    _timer4_prescaler = 0x04;
++    _timer4_divider = 256UL;
++  } else {
++    _timer4_prescaler = 0x05;
++    _timer4_divider = 1024UL;
++  }
++
++  uint16_t _timer4_top = (_timer4_cycles < 65536UL * 1024 ? (_timer4_cycles / _timer4_divider) : 65536UL) ;
++
++  TCCR4A = (TCCR4A & 0xFC);
++  TCCR4B = ((1 << WGM43) | (1 << WGM42) | _timer4_prescaler);   // CTC mode + set prescaler
++  ICR4 = _timer4_top - 1;             // Set timer top
++  _timer4_clock = (TCCR4B & 0x07);    // Save timer clock settings
++
++  return (1000000UL / ((F_CPU / _timer4_divider) / _timer4_top));   // Return real timer period
++}
++
++uint32_t Timer_5::setPeriod(uint32_t _timer5_period)  {
++  _timer5_period = constrain(_timer5_period, 1, MAX_PERIOD_16);
++
++  uint32_t _timer5_cycles = F_CPU / 1000000 * _timer5_period;  // Calculation of the number of timer cycles per period
++  uint8_t _timer5_prescaler = 0x00;
++  uint16_t _timer5_divider = 0x00;
++
++  if (_timer5_cycles < 65536UL) {   // Сhoose optimal divider for the timer
++    _timer5_prescaler = 0x01;
++    _timer5_divider = 1UL;
++  } else if (_timer5_cycles < 65536UL * 8) {
++    _timer5_prescaler = 0x02;
++    _timer5_divider = 8UL;
++  } else if (_timer5_cycles < 65536UL * 64) {
++    _timer5_prescaler = 0x03;
++    _timer5_divider = 64UL;
++  } else if (_timer5_cycles < 65536UL * 256) {
++    _timer5_prescaler = 0x04;
++    _timer5_divider = 256UL;
++  } else {
++    _timer5_prescaler = 0x05;
++    _timer5_divider = 1024UL;
++  }
++
++  uint16_t _timer5_top = (_timer5_cycles < 65536UL * 1024 ? (_timer5_cycles / _timer5_divider) : 65536UL) ;
++
++  TCCR5A = (TCCR5A & 0xFC);
++  TCCR5B = ((1 << WGM53) | (1 << WGM52) | _timer5_prescaler);   // CTC mode + set prescaler
++  ICR5 = _timer5_top - 1;             // Set timer top
++  _timer5_clock = (TCCR5B & 0x07);    // Save timer clock settings
++
++  return (1000000UL / ((F_CPU / _timer5_divider) / _timer5_top));   // Return real timer period
++}
++
++#endif
++
++
++Timer_0 Timer0 = Timer_0();
++Timer_1 Timer1 = Timer_1();
++Timer_2 Timer2 = Timer_2();
++
++#if defined(__AVR_ATmega2560__)
++Timer_3 Timer3 = Timer_3();
++Timer_4 Timer4 = Timer_4();
++Timer_5 Timer5 = Timer_5();
++#endif
+\ No newline at end of file
+diff --git a/lib/GyverTimers/src/GyverTimers.h b/lib/GyverTimers/src/GyverTimers.h
+new file mode 100644
+index 0000000..6f1afb8
+--- /dev/null
++++ b/lib/GyverTimers/src/GyverTimers.h
+@@ -0,0 +1,422 @@
++/*
++    Настройка и контроль прерываний по аппаратным таймерам ATmega328p, ATmega2560
++    Документация: https://alexgyver.ru/gyvertimers/
++    GitHub: https://github.com/GyverLibs/GyverTimers
++    Возможности:
++    - Поддерживаются все три таймера на ATmega328 и шесть таймеров на ATmega2560;		
++    - Настройка периода (мкс) и частоты (Гц) прерываний:
++        - 8 бит таймеры: 61 Гц - 1 МГц (16 384 мкс.. 1 мкс);
++        - 16 бит таймеры: 0.24 Гц - 1 МГц (4 200 000 мкс.. 1 мкс);
++    - Автоматическая корректировка настройки периода от частоты тактирования (F_CPU);
++    - Функция возвращает точный установившийся период/частоту для отладки (частота ограничена разрешением таймера);
++    - Поддержка многоканального режима работы: один таймер вызывает 2 (ATmega328) или
++    3 (ATmega2560, таймеры 1, 3, 4, 5) прерывания с настраиваемым сдвигом по фазе 0-360 градусов;
++    - Настраиваемое действие аппаратного вывода таймера по прерыванию: высокий сигнал, низкий сигнал, переключение. 
++    Позволяет генерировать меандр (одно- и двухтактный);
++    - Контроль работы таймера: старт/стоп/пауза/продолжить/инициализация;
++    
++    Egor 'Nich1con' Zaharov for AlexGyver, alex@alexgyver.ru
++    https://alexgyver.ru/
++    MIT License
++
++    Версии:
++    v1.1 - исправлена ошибка в расчёте периодов
++    v1.2 - код разбит на h и cpp
++    v1.3 - поправлен незначительный баг
++    v1.4 - исправлена таблица частот и периодов
++    v1.5 - исправлен restart и resume
++    v1.6 - phase shift вынесен отдельным методом
++    v1.7 - поправлена документация
++    v1.8 - исправлен баг с макс периодом
++    v1.9 - исправлен баг с возвращаемым 2х периодом
++    v1.10 - добавлен флаг ready 
++*/
++
++/*
++-------------------------------- Arduino NANO 16 МГц (ATmega328) ------------------------------------
++Таймер	| Разрядность	| Частоты			| Периоды			| Выходы	| Пин Arduino	| Пин МК|
++--------|---------------|-------------------|-------------------|-----------|---------------|-------|
++Timer0	| 8 бит			| 61 Гц - 1 МГц		| 16 384.. 1 мкс	| CHANNEL_A	| D6			| PD6	|
++        | 				| 					| 					| CHANNEL_B	| D5			| PD5	|
++--------|---------------|-------------------|-------------------|-----------|---------------|-------|
++Timer1	| 16 бит		| 0.24 Гц - 1 МГц	| 4 200 000.. 1 мкс	| CHANNEL_A	| D9			| PB1	|
++        | 				| 					| 					| CHANNEL_B	| D10			| PB2	|
++--------|---------------|-------------------|-------------------|-----------|---------------|-------|
++Timer2	| 8 бит			| 61 Гц - 1 МГц		| 16 384.. 1 мкс	| CHANNEL_A	| D11			| PB3	|
++        | 				| 					| 					| CHANNEL_B	| D3			| PD3	|
++----------------------------------------------------------------------------------------------------
++                        
++------------------------------ Arduino MEGA 16 МГц (ATmega2560) -------------------------------------
++Таймер	| Разрядность	| Частоты			| Периоды			| Выходы	| Пин Arduino	| Пин МК|
++--------|---------------|-------------------|-------------------|-----------|---------------|-------|
++Timer0	| 8 бит			| 61 Гц - 1 МГц		| 16 384.. 1 мкс	| CHANNEL_A	| 13			| PB7	|
++        | 				| 					| 					| CHANNEL_B	| 4				| PG5	|
++--------|---------------|-------------------|-------------------|-----------|---------------|-------|
++Timer1	| 16 бит		| 0.24 Гц - 1 МГц	| 4 200 000.. 1 мкс	| CHANNEL_A	| 11			| PB5	|
++        | 				| 					| 					| CHANNEL_B	| 12			| PB6	|
++        | 				| 					| 					| CHANNEL_C	| 13			| PB7	|
++--------|---------------|-------------------|-------------------|-----------|---------------|-------|
++Timer2	| 8 бит			| 61 Гц - 1 МГц		| 16 384.. 1 мкс	| CHANNEL_A	| 10			| PB4	|
++        | 				| 					| 					| CHANNEL_B	| 9				| PH6	|
++--------|---------------|-------------------|-------------------|-----------|---------------|-------|
++Timer3	| 16 бит		| 0.24 Гц - 1 МГц	| 4 200 000.. 1 мкс	| CHANNEL_A	| 5				| PE3	|
++        | 				| 					| 					| CHANNEL_B	| 2				| PE4	|
++        | 				| 					| 					| CHANNEL_C	| 3				| PE5	|
++--------|---------------|-------------------|-------------------|-----------|---------------|-------|
++Timer4	| 16 бит		| 0.24 Гц - 1 МГц	| 4 200 000.. 1 мкс	| CHANNEL_A	| 6				| PH3	|
++        | 				| 					| 					| CHANNEL_B	| 7				| PH4	|
++        | 				| 					| 					| CHANNEL_C	| 8				| PH5	|
++--------|---------------|-------------------|-------------------|-----------|---------------|-------|
++Timer5	| 16 бит		| 0.24 Гц - 1 МГц	| 4 200 000.. 1 мкс	| CHANNEL_A	| 46			| PL3	|
++        | 				| 					| 					| CHANNEL_B	| 45			| PL4	|
++        | 				| 					| 					| CHANNEL_C	| 44			| PL5	|
++----------------------------------------------------------------------------------------------------
++*/
++
++/*
++    setPeriod(период) - установка периода в микросекундах и запуск таймера. Возвращает реальный период (точность ограничена разрешением таймера).
++    setFrequency(частота) - установка частоты в Герцах и запуск таймера. Возвращает реальную частоту (точность ограничена разрешением таймера).
++    setFrequencyFloat(частота float) - установка частоты в Герцах и запуск таймера, разрешены десятичные дроби. Возвращает реальную частоту (точность ограничена разрешением таймера).
++    enableISR(источник) - включить прерывания, канал прерываний CHANNEL_A или CHANNEL_B (+ CHANNEL_C у Mega2560)
++    disableISR(источник) - выключить прерывания, канал CHANNEL_A или CHANNEL_B. Счёт таймера не останавливается (без указания параметров будет выключен канал А).
++    pause() - приостановить счёт таймера, не сбрасывая счётчик
++    resume() - продолжить счёт после паузы
++    stop() - остановить счёт и сбросить счётчик
++    restart() - перезапустить таймер (сбросить счётчик)
++    setDefault() - установить параметры таймера по умолчанию ("Ардуино-умолчания")
++    outputEnable(канал, режим) - канал: включить выход таймера CHANNEL_A или CHANNEL_B (+ CHANNEL_C у Mega2560). Режим: TOGGLE_PIN, CLEAR_PIN, SET_PIN (переключить/выключить/включить пин по прерыванию)
++    outputDisable(канал) - отключить выход таймера CHANNEL_A или CHANNEL_B (+ CHANNEL_C у Mega2560, см. такблицу таймеров)
++    outputState(канал, состояние) - сменить состояние канала: HIGH / LOW
++    phaseShift(источник, фаза) - сдвинуть фазу канала на 0-360 градусов (у 8 бит таймеров двигается только канал B)
++*/
++
++#define MAX_PERIOD_8 (1000000UL * 1024UL / F_CPU * 256UL)		// 16384 (61 Гц) на 16 МГц
++#define MAX_PERIOD_16 (1000000UL * 1024UL / F_CPU * 65536UL)	// 4194304 (0.24 Гц) на 16 МГц
++
++#ifndef GyverTimers_h
++#define GyverTimers_h
++#include <Arduino.h>
++
++/* ==========  Константы ========== */
++#define CHANNEL_A 0x00
++#define CHANNEL_B 0x01
++#define CHANNEL_C 0x02
++
++#define TOGGLE_PIN 0x01
++#define CLEAR_PIN 0x02
++#define SET_PIN 0x03
++
++#define TIMER0_A  TIMER0_COMPA_vect
++#define TIMER0_B  TIMER0_COMPB_vect
++#define TIMER1_A  TIMER1_COMPA_vect
++#define TIMER1_B  TIMER1_COMPB_vect
++#define TIMER2_A  TIMER2_COMPA_vect
++#define TIMER2_B  TIMER2_COMPB_vect
++
++#if defined(__AVR_ATmega2560__)
++#define TIMER1_C  TIMER1_COMPC_vect
++#define TIMER3_A  TIMER3_COMPA_vect
++#define TIMER3_B  TIMER3_COMPB_vect
++#define TIMER3_C  TIMER3_COMPC_vect
++#define TIMER4_A  TIMER4_COMPA_vect
++#define TIMER4_B  TIMER4_COMPB_vect
++#define TIMER4_C  TIMER4_COMPC_vect
++#define TIMER5_A  TIMER5_COMPA_vect
++#define TIMER5_B  TIMER5_COMPB_vect
++#define TIMER5_C  TIMER5_COMPC_vect
++#endif
++
++#define GYVERTIMERS_INLINE
++/*inline __attribute__((always_inline))*/
++
++/* ================ Сlasses of timers ================ */
++class Timer_0 {                       					  // Timer 0
++public:
++    uint32_t setPeriod(uint32_t _timer0_period);          // Set timer period [us]
++    uint32_t setFrequency(uint32_t _timer0_frequency);    // Set timer frequency [Hz]
++    float setFrequencyFloat(float _timer0_frequency);  	  // Set timer float frequency [Hz]
++    
++	GYVERTIMERS_INLINE
++	bool ready(uint8_t channel = CHANNEL_A);			  // Return true, is interrupt is ready, but not enabled
++	
++    GYVERTIMERS_INLINE
++    void enableISR(uint8_t source = CHANNEL_A);           // Enable timer interrupt , channel A or B 
++    
++    GYVERTIMERS_INLINE
++    void disableISR(uint8_t source = CHANNEL_A);          // Disable timer interrupt , channel A or B
++    
++    GYVERTIMERS_INLINE
++    void pause(void);                   				  // Disable timer clock , not cleaning the counter
++    
++    GYVERTIMERS_INLINE
++    void resume(void);                 				      // Return clock timer settings
++    
++    GYVERTIMERS_INLINE
++    void stop(void);                   					  // Disable timer clock , and cleaning the counter
++    
++    GYVERTIMERS_INLINE
++    void restart(void);                  				  // Return clock timer settings & reset counter
++    
++    GYVERTIMERS_INLINE
++    void setDefault(void);               			      // Set default timer settings
++    
++    GYVERTIMERS_INLINE
++    void outputEnable(uint8_t channel, uint8_t mode);	  // Enable and configurate timer hardware output
++    
++    GYVERTIMERS_INLINE
++    void outputDisable(uint8_t channel);				  // Disable timer hardware output
++    
++    GYVERTIMERS_INLINE
++    void outputState(uint8_t channel,bool state);		  // Set High / Low on the timer output 
++    
++    GYVERTIMERS_INLINE
++    void phaseShift(uint8_t source, uint16_t phase);
++    
++private:
++    uint8_t _timer0_clock = 0x00;           			  // Variable to store timer clock settings
++};
++
++class Timer_1 {                      					  // Timer 1
++public:
++    uint32_t setPeriod(uint32_t _timer1_period);      	  // Set timer period [Hz]
++    uint32_t setFrequency(uint32_t _timer1_frequency);    // Set timer frequency [Hz]
++    float setFrequencyFloat(float _timer1_frequency);     // Set timer float frequency [Hz]
++    
++	GYVERTIMERS_INLINE
++	bool ready(uint8_t channel = CHANNEL_A);			  // Return true, is interrupt is ready, but not enabled	
++	
++    GYVERTIMERS_INLINE
++    void enableISR(uint8_t source = CHANNEL_A);       	  // Enable timer interrupt , channel A or B 
++    
++    GYVERTIMERS_INLINE
++    void disableISR(uint8_t source = CHANNEL_A);          // Disable timer interrupt , channel A or B
++    
++    GYVERTIMERS_INLINE
++    void pause(void);                   				  // Disable timer clock , not cleaning the counter
++    
++    GYVERTIMERS_INLINE
++    void resume(void);                    				  // Return clock timer settings
++    
++    GYVERTIMERS_INLINE
++    void stop(void);                    				  // Disable timer clock , and cleaning the counter	
++    
++    GYVERTIMERS_INLINE
++    void restart(void);                   				  // Return clock timer settings & reset counter
++    
++    GYVERTIMERS_INLINE
++    void setDefault(void);                  			  // Set default timer settings
++    
++    GYVERTIMERS_INLINE
++    void outputEnable(uint8_t channel, uint8_t mode);	  // Enable and configurate timer hardware output
++    
++    GYVERTIMERS_INLINE
++    void outputDisable(uint8_t channel);				  // Disable timer hardware output
++    
++    GYVERTIMERS_INLINE
++    void outputState(uint8_t channel,bool state);		  // Set High / Low on the timer output  
++    
++    GYVERTIMERS_INLINE
++    void phaseShift(uint8_t source, uint16_t phase);
++    
++private:
++    uint8_t _timer1_clock = 0x00;             			  // Variable to store timer clock settings
++};
++
++class Timer_2 {                       					  // Timer 2
++public:
++    uint32_t setPeriod(uint32_t _timer2_period);      	  // Set timer period [Hz]
++    uint32_t setFrequency(uint32_t _timer2_frequency);    // Set timer frequency [Hz]
++    float setFrequencyFloat(float _timer2_frequency);     // Set timer float frequency [Hz]
++    
++	GYVERTIMERS_INLINE
++	bool ready(uint8_t channel = CHANNEL_A);			  // Return true, is interrupt is ready, but not enabled
++	
++    GYVERTIMERS_INLINE
++    void enableISR(uint8_t source = CHANNEL_A);      	  // Enable timer interrupt , channel A or B 
++    
++    GYVERTIMERS_INLINE
++    void disableISR(uint8_t source = CHANNEL_A);          // Disable timer interrupt , channel A or B
++    
++    GYVERTIMERS_INLINE
++    void pause(void);                   				  // Disable timer clock , not cleaning the counter
++    
++    GYVERTIMERS_INLINE
++    void resume(void);                 				      // Return clock timer settings
++    
++    GYVERTIMERS_INLINE
++    void stop(void);                    				  // Disable timer clock , and cleaning the counter
++    
++    GYVERTIMERS_INLINE
++    void restart(void);                  				  // Return clock timer settings & reset counter
++    
++    GYVERTIMERS_INLINE
++    void setDefault(void);                  			  // Set default timer settings
++    
++    GYVERTIMERS_INLINE
++    void outputEnable(uint8_t channel, uint8_t mode);	  // Enable and configurate timer hardware output
++    
++    GYVERTIMERS_INLINE
++    void outputDisable(uint8_t channel);				  // Disable timer hardware output
++    
++    GYVERTIMERS_INLINE
++    void outputState(uint8_t channel,bool state);		  // Set High / Low on the timer output  
++    
++    GYVERTIMERS_INLINE
++    void phaseShift(uint8_t source, uint16_t phase);
++    
++private:
++    uint8_t _timer2_clock = 0x00;             			  // Variable to store timer clock settings	
++};
++
++#if defined(__AVR_ATmega2560__)
++class Timer_3 {                       					  // Timer 3
++public:
++    uint32_t setPeriod(uint32_t _timer3_period);     	  // Set timer period [Hz]
++    uint32_t setFrequency(uint32_t _timer3_frequency);    // Set timer frequency [Hz]
++    float setFrequencyFloat(float _timer3_frequency);     // Set timer float frequency [Hz]
++    
++	GYVERTIMERS_INLINE
++	bool ready(uint8_t channel = CHANNEL_A);			  // Return true, is interrupt is ready, but not enabled
++	
++    GYVERTIMERS_INLINE
++    void enableISR(uint8_t source = CHANNEL_A);       	  // Enable timer interrupt , channel A or B
++    
++    GYVERTIMERS_INLINE
++    void disableISR(uint8_t source = CHANNEL_A);          // Disable timer interrupt , channel A or B
++    
++    GYVERTIMERS_INLINE
++    void pause(void);                  					  // Disable timer clock , not cleaning the counter
++    
++    GYVERTIMERS_INLINE
++    void resume(void);                   				  // Return clock timer settings
++    
++    GYVERTIMERS_INLINE
++    void stop(void);                    				  // Disable timer clock , and cleaning the counter
++    
++    GYVERTIMERS_INLINE
++    void restart(void);                   				  // Return clock timer settings & reset counter
++    
++    GYVERTIMERS_INLINE
++    void setDefault(void);                				  // Set default timer settings
++    
++    GYVERTIMERS_INLINE
++    void outputEnable(uint8_t channel, uint8_t mode);	  // Enable and configurate timer hardware output
++    
++    GYVERTIMERS_INLINE
++    void outputDisable(uint8_t channel);				  // Disable timer hardware output
++    
++    GYVERTIMERS_INLINE
++    void outputState(uint8_t channel,bool state);		  // Set High / Low on the timer output 
++    
++    GYVERTIMERS_INLINE
++    void phaseShift(uint8_t source, uint16_t phase);
++    
++private:
++    uint8_t _timer3_clock = 0x00;             			  // Variable to store timer clock settings
++};
++
++class Timer_4 {                      					  // Timer 4
++public:
++    uint32_t setPeriod(uint32_t _timer4_period);      	  // Set timer period [Hz]
++    uint32_t setFrequency(uint32_t _timer4_frequency);    // Set timer frequency [Hz]
++    float setFrequencyFloat(float _timer4_frequency);     // Set timer float frequency [Hz]
++    
++	GYVERTIMERS_INLINE
++	bool ready(uint8_t channel = CHANNEL_A);			  // Return true, is interrupt is ready, but not enabled
++	
++    GYVERTIMERS_INLINE
++    void enableISR(uint8_t source = CHANNEL_A);       	  // Enable timer interrupt , channel A or B
++    
++    GYVERTIMERS_INLINE
++    void disableISR(uint8_t source = CHANNEL_A);          // Disable timer interrupt , channel A or B
++    
++    GYVERTIMERS_INLINE
++    void pause(void);                  					  // Disable timer clock , not cleaning the counter
++    
++    GYVERTIMERS_INLINE
++    void resume(void);                    				  // Return clock timer settings
++    
++    GYVERTIMERS_INLINE
++    void stop(void);                   				      // Disable timer clock , and cleaning the counter
++    
++    GYVERTIMERS_INLINE
++    void restart(void);                        			  // Return clock timer settings & reset counter
++    
++    GYVERTIMERS_INLINE
++    void setDefault(void);                  			  // Set default timer settings
++    
++    GYVERTIMERS_INLINE
++    void outputEnable(uint8_t channel, uint8_t mode);	  // Enable and configurate timer hardware output
++    
++    GYVERTIMERS_INLINE
++    void outputDisable(uint8_t channel);				  // Disable timer hardware output
++    
++    GYVERTIMERS_INLINE
++    void outputState(uint8_t channel,bool state);		  // Set High / Low on the timer output 
++    
++    GYVERTIMERS_INLINE
++    void phaseShift(uint8_t source, uint16_t phase);
++    
++private:
++    uint8_t _timer4_clock = 0x00;            			  // Variable to store timer clock settings
++};
++
++class Timer_5 {                     					  // Timer 5
++public:
++    uint32_t setPeriod(uint32_t _timer5_period);          // Set timer period [Hz]
++    uint32_t setFrequency(uint32_t _timer5_frequency);    // Set timer frequency [Hz]
++    float setFrequencyFloat(float _timer5_frequency);     // Set timer float frequency [Hz]
++    
++	GYVERTIMERS_INLINE
++	bool ready(uint8_t channel = CHANNEL_A);			  // Return true, is interrupt is ready, but not enabled
++	
++    GYVERTIMERS_INLINE
++    void enableISR(uint8_t source = CHANNEL_A);       	  // Enable timer interrupt , channel A or B
++    
++    GYVERTIMERS_INLINE
++    void disableISR(uint8_t source = CHANNEL_A);          // Disable timer interrupt , channel A or B
++    
++    GYVERTIMERS_INLINE
++    void pause(void);                  					  // Disable timer clock , not cleaning the counter
++    
++    GYVERTIMERS_INLINE
++    void resume(void);                    				  // Return clock timer settings
++    
++    GYVERTIMERS_INLINE
++    void stop(void);                    				  // Disable timer clock , and cleaning the counter
++    
++    GYVERTIMERS_INLINE
++    void restart(void);                  				  // Return clock timer settings & reset counter
++    
++    GYVERTIMERS_INLINE
++    void setDefault(void);                 				  // Set default timer settings
++    
++    GYVERTIMERS_INLINE
++    void outputEnable(uint8_t channel, uint8_t mode);	  // Enable and configurate timer hardware output
++    
++    GYVERTIMERS_INLINE
++    void outputDisable(uint8_t channel);				  // Disable timer hardware output
++    
++    GYVERTIMERS_INLINE
++    void outputState(uint8_t channel,bool state);		  // Set High / Low on the timer output 
++    
++    GYVERTIMERS_INLINE
++    void phaseShift(uint8_t source, uint16_t phase);
++    
++private:
++    uint8_t _timer5_clock = 0x00;                		  // Variable to store timer clock settings
++};
++
++#endif
++
++extern Timer_0 Timer0;
++extern Timer_1 Timer1;
++extern Timer_2 Timer2;
++
++#if defined(__AVR_ATmega2560__)
++extern Timer_3 Timer3;
++extern Timer_4 Timer4;
++extern Timer_5 Timer5;
++#endif
++
++#endif
+\ No newline at end of file
+diff --git a/src/UI.cpp b/src/UI.cpp
+index ecd3592..281145b 100644
+--- a/src/UI.cpp
++++ b/src/UI.cpp
+@@ -25,27 +25,47 @@ void UI::renderScale(uint8_t value) {
+ void UI::renderMenuEntries() {
+     const byte endLine = ((menuEntryCount < 7) ? menuEntryCount + 1 : 7) + menuEntryRendererStartId;
+ 
+-    this->setCursor(0, 1);
++    uint8_t currentLine = 1;
+     for (byte line = menuEntryRendererStartId; line < endLine; line++) {
+         char linebuffer[42];
+         uint16_t ptr = pgm_read_word(&(menuEntries[line]));
+         uint8_t charid = 0;
+ 
++        byte flagId = 0;
++        bool mark = false;
++        if ((char)(pgm_read_byte(ptr)) == '?') {
++            ptr++;
++            mark = true;
++            flagId = pgm_read_byte(ptr++) - 65;
++        }
++
+         do {
+           linebuffer[charid] = (char)(pgm_read_byte(ptr++));
+         } while (linebuffer[charid++] != NULL);
+ 
++        this->setCursor(0, currentLine);
+         this->invertText(line == menuChooseId);
+-        this->println(linebuffer);
++        this->print(linebuffer);
+         this->invertText(0);
++
++        if (mark) {
++            this->setCursor(120, currentLine);
++            if ((*menuBoolsCache >> flagId) & 0x01) {
++                this->print('+');
++            } else {
++                this->print('-');
++            }
++        }
++        currentLine++;
+     }
+ }
+ 
+-void UI::createMenu(const char *title, const char* const *entries, byte entryCount, void (*handler)(byte)) {
++void UI::createMenu(const char *title, const char* const *entries, byte entryCount, void (*handler)(byte), int* boolsCache) {
+     menuChooseId = 0, menuVisibleSelId = 0, menuEntryRendererStartId = 0;
+     menuEntryCount = entryCount - 1;
+     menuHandler = handler;
+     menuEntries = entries;
++    menuBoolsCache = boolsCache;
+ 
+     this->clear();
+ 
+@@ -67,31 +87,31 @@ void UI::hold() {
+ }
+ 
+ void UI::rotate(bool dir) {
+-    if (dir) { // вправо
+-        if (menuVisibleSelId < 6) {
+-            if (menuVisibleSelId < menuEntryCount)
+-                menuVisibleSelId++;
+-            else
+-                return;
+-        } else {
+-            if (menuEntryRendererStartId + 6 < menuEntryCount) {
+-                menuEntryRendererStartId++;
+-                this->clearMainArea();
+-            } else
+-                return;
+-        }
+-    } else { // влево
+-        if (menuVisibleSelId > 0)
+-            menuVisibleSelId--;
+-        else {
+-            if (menuEntryRendererStartId > 0) {
+-                menuEntryRendererStartId--;
+-                this->clearMainArea();
+-            } else
+-                return;
+-        }
+-    }
++    // if (dir) { // вправо
++    //     if (menuVisibleSelId < 6) {
++    //         if (menuVisibleSelId < menuEntryCount)
++    //             menuVisibleSelId++;
++    //         else
++    //             return;
++    //     } else {
++    //         if (menuEntryRendererStartId + 6 < menuEntryCount) {
++    //             menuEntryRendererStartId++;
++    //             this->clearMainArea();
++    //         } else
++    //             return;
++    //     }
++    // } else { // влево
++    //     if (menuVisibleSelId > 0)
++    //         menuVisibleSelId--;
++    //     else {
++    //         if (menuEntryRendererStartId > 0) {
++    //             menuEntryRendererStartId--;
++    //             this->clearMainArea();
++    //         } else
++    //             return;
++    //     }
++    // }
+ 
+-    menuChooseId = menuEntryRendererStartId + menuVisibleSelId;
+-    this->renderMenuEntries();
++    // menuChooseId = menuEntryRendererStartId + menuVisibleSelId;
++    // this->renderMenuEntries();
+ }
+\ No newline at end of file
+diff --git a/src/UI.h b/src/UI.h
+index 8237c67..034744e 100644
+--- a/src/UI.h
++++ b/src/UI.h
+@@ -12,7 +12,7 @@ class UI: public GyverOLED<SSD1306_128x64, OLED_NO_BUFFER> {
+         UI();
+         byte disp_id = 0;
+         void renderScale(uint8_t value);
+-        void createMenu(const char *title, const char* const *entries, byte entryCount, void (*handler)(byte));
++        void createMenu(const char *title, const char* const *entries, byte entryCount, void (*handler)(byte), int* boolsCache = NULL);
+         void clearMainArea() { this->clear(0, 8, 127, 63); }
+         //void renderQuestionScreen(const char* title, const char* text, const char* f_entry, const char* s_entry);
+         // Действия ручки управления
+@@ -26,4 +26,5 @@ class UI: public GyverOLED<SSD1306_128x64, OLED_NO_BUFFER> {
+         const char* const *menuEntries;
+         byte menuVisibleSelId, menuEntryRendererStartId, menuChooseId;
+         byte menuEntryCount;
++        int *menuBoolsCache;
+ };
+\ No newline at end of file
+diff --git a/src/amplifier.h b/src/amplifier.h
+new file mode 100644
+index 0000000..9ea8e12
+--- /dev/null
++++ b/src/amplifier.h
+@@ -0,0 +1,8 @@
++#include "spiregister.h"
++#include "defines.h"
++
++void setAmplifier(bool state) {
++    extWrite(state ? EXT_AMP_STANDBY : EXT_AMP_MUTE, state);
++    delay(150);
++    extWrite(state ? EXT_AMP_MUTE : EXT_AMP_STANDBY, state);
++}
+\ No newline at end of file
+diff --git a/src/bluetooth.h b/src/bluetooth.h
+new file mode 100644
+index 0000000..899b564
+--- /dev/null
++++ b/src/bluetooth.h
+@@ -0,0 +1,139 @@
++#include <Arduino.h>
++#include "GyverTimers.h"
++#include "config.h"
++#include "defines.h"
++#include "spiregister.h"
++
++#define BT_TX_HIGH PORTD |= _BV(PD4)
++#define BT_TX_LOW PORTD &= ~_BV(PD4)
++
++char bt_rx_buffer[16];
++int rx_char;
++byte rx_buffer_pos = 0, rx_buff_c_pos = 0;
++// bool replyReady = false;
++extern volatile unsigned long timer0_millis;
++
++void _bt_writeChar(char c)
++{
++    uint8_t oldSREG = SREG;
++    cli();
++    BT_TX_LOW;
++    for (byte i = 0; i < 8; i++)
++    {
++        delayMicroseconds(102);
++        if ((c >> i) & 0x01)
++            BT_TX_HIGH;
++        else
++            BT_TX_LOW;
++    }
++    delayMicroseconds(101);
++    BT_TX_HIGH;
++    SREG = oldSREG;
++    delayMicroseconds(101);
++}
++
++void _bt_printLine(const char s[])
++{
++    byte pos = 0;
++    while (s[pos] != '\0')
++    {
++        _bt_writeChar(s[pos]);
++        pos++;
++    }
++}
++
++bool _bt_signatureCheck(const char* signature) {
++    unsigned long timeout = timer0_millis;
++    bool flag = false;
++    while (timer0_millis - timeout < CHIP_REPLY_TIMEOUT_MS)
++    {
++        if (strcmp(bt_rx_buffer, signature) == 0)
++        {
++            flag = true;
++            break;
++        }
++    }
++    rx_buffer_pos = 0;
++    return flag;
++}
++
++bool bt_sendAT(const char* cmd) {
++    _bt_printLine("AT+");
++    _bt_printLine(cmd);
++    _bt_writeChar('\r');
++    _bt_writeChar('\n');
++    
++    return _bt_signatureCheck("OK");
++}
++
++bool bt_activate()
++{
++    DDRB &= ~_BV(PB0);
++    PORTB |= _BV(PB0);
++
++    DDRD |= _BV(PD4);
++    BT_TX_HIGH;         // установить высокий уровень на TX
++    PCMSK2 |= _BV(PD5); // активировать пин D5 на прерывании PCINT2
++    PCICR |= (1 << 2);  // активировать PCINT2
++
++    Timer1.setPeriod(SOFTUART_BIT_RX_US);
++    Timer1.stop();
++    Timer1.enableISR();
++
++    extWrite(EXT_BT_ENABLE, false);
++    delay(100);
++    extWrite(EXT_BT_ENABLE, true);
++
++    if (!_bt_signatureCheck("ON")) return false;
++    //Serial.println("INIT");
++    //return bt_sendAT("CP");
++    return true;
++}
++
++ISR(TIMER1_A)
++{
++    if ((PIND >> 5) & 0x01)
++        rx_char |= (1 << rx_buff_c_pos);
++    else
++        rx_char &= ~(1 << rx_buff_c_pos);
++
++    rx_buff_c_pos++;
++    if (rx_buff_c_pos > 8)
++    {
++        Timer1.stop();
++        PCMSK2 |= _BV(PD5);
++
++        // проверка наличия стоп-бита
++        if (!((rx_char >> 8) & 0x01))
++            return;
++
++        rx_char &= 0xFF;
++        if (rx_buffer_pos == 0 && (rx_char < 65 || rx_char > 90))
++            return;
++
++        //Serial.print(rx_buffer_pos);
++        //Serial.write(rx_char);
++        if (rx_char == '\n')
++        {
++            bt_rx_buffer[rx_buffer_pos - 1] = '\0';
++            //Serial.println(bt_rx_buffer);
++            return;
++            //replyReady = true;
++        }
++        bt_rx_buffer[rx_buffer_pos] = rx_char;
++        rx_buffer_pos++;
++    }
++}
++
++ISR(PCINT2_vect)
++{
++    if (!((PIND >> 5) & 0x01))
++    {
++        PCMSK2 &= ~_BV(PD5);
++        rx_buff_c_pos = 0;
++        if (rx_buffer_pos > 14)
++            return;
++        delayMicroseconds(8);
++        Timer1.restart();
++    }
++}
+\ No newline at end of file
+diff --git a/src/config.h b/src/config.h
+index a269703..7d83ecc 100644
+--- a/src/config.h
++++ b/src/config.h
+@@ -1,3 +1,19 @@
++#ifndef _config_h
++#define _config_h
++
++// пользовательские настройки
+ //#define RUSSIAN
+ #define CTRL_HOLD_TIMEOUT_MS 500
+-#define I2C_SPEED_HZ 400000L
+\ No newline at end of file
++#define CHIP_REPLY_TIMEOUT_MS 3000
++#define INIT_VOL_HNDR 25
++
++// адреса модулей
++#define DIGIPOT_MASTER_I2C 0b0101000 // все пины адреса на минус
++#define DIGIPOT_SUB_I2C 0b0101100 // A2 на плюс, остальное на минус
++
++// настройки подогнаны под аппаратные требования, НЕОБДУМАННОЕ ИЗМЕНЕНИЕ ЗАПРЕЩЕНО!
++#define I2C_SPEED_HZ 400000L
++#define SOFTUART_BIT_TX_US 104
++#define SOFTUART_BIT_RX_US 104
++
++#endif
+\ No newline at end of file
+diff --git a/src/defines.h b/src/defines.h
+index 1249bb6..49294bf 100644
+--- a/src/defines.h
++++ b/src/defines.h
+@@ -1,4 +1,14 @@
++#ifndef _defines_h
++#define _defines_h
++
+ // текстовое обозначение состояний обработчика ручки управления
+ #define CTRL_CLICK 1
+ #define CTRL_HOLDING 2
+-#define CTRL_ROTATING 3
+\ No newline at end of file
++#define CTRL_ROTATING 3
++
++// выводы сдвигового регистра
++#define EXT_BT_ENABLE 7
++#define EXT_AMP_STANDBY 0
++#define EXT_AMP_MUTE 1
++
++#endif
+\ No newline at end of file
+diff --git a/src/ds1803.h b/src/ds1803.h
+new file mode 100644
+index 0000000..a85794b
+--- /dev/null
++++ b/src/ds1803.h
+@@ -0,0 +1,42 @@
++#include "microWire.h"
++#include "defines.h"
++#include "config.h"
++
++#define HNDR_TO_BYTE false
++#define BYTE_TO_HNDR true
++
++byte _digipot_cache[2];
++
++/* За основу нагло взят исходник оригинальной ардуиновской функции map().
++ * Доработан под собственные нужды, в частности, 8-битный int вместо 32-битного,
++ * нафиг шерудить ненужные 32-бит числа на 8-бит процессоре?
++ * 
++ * Так-то компилятор должен это оптимизировать, но я на всякий случай...
++ * 02.12.2021, 23:46
++*/
++byte volConvert(byte input, bool direction)
++{
++    if (direction)
++        return input * 255 / 100;
++    else
++        return input * 100 / 255;       
++    //return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
++}
++
++bool writeValues()
++{
++    Wire.beginTransmission(DIGIPOT_MASTER_I2C);
++    Wire.write(0b10101001); // команда на запись обеих потенциометров
++    Wire.write(_digipot_cache[0]);
++    Wire.write(_digipot_cache[1]);
++
++    return (Wire.endTransmission() == 0);
++}
++
++bool setVolume(byte vol)
++{
++    vol = volConvert(vol, HNDR_TO_BYTE);
++    _digipot_cache[0] = vol, _digipot_cache[1] = vol;
++
++    return writeValues();
++}
+\ No newline at end of file
+diff --git a/src/localization.h b/src/localization.h
+index 4352d87..3592b89 100644
+--- a/src/localization.h
++++ b/src/localization.h
+@@ -1,29 +1,13 @@
+ #include <Arduino.h> // из-за PROGMEM, чтобы intellisense не ругался
+ 
+-const char i0[] PROGMEM = "здравствуй";
+-const char i1[] PROGMEM = "небо";
+-const char i2[] PROGMEM = "в облаках";
+-const char i3[] PROGMEM = "здравствуй";
+-const char i4[] PROGMEM = "юность";
+-const char i5[] PROGMEM = "в сапогах";
+-const char i6[] PROGMEM = "пропади";
+-const char i7[] PROGMEM = "моя тоска";
+-const char i8[] PROGMEM = "вот он я";
+-const char i9[] PROGMEM = "привет";
+-const char i10[] PROGMEM = "ВОЙСКА!!!";
+-
+-const char a0[] PROGMEM = "А";
+-const char a1[] PROGMEM = "Б";
+-const char a2[] PROGMEM = "В";
+-const char a3[] PROGMEM = "Г";
+-const char a4[] PROGMEM = "Д";
+-const char a5[] PROGMEM = "Е";
+-const char a6[] PROGMEM = "Ж";
+-
+-const char b0[] PROGMEM = "Пунктик 1";
+-const char b1[] PROGMEM = "Большой теееекст";
+-const char b2[] PROGMEM = "2";
+-
+-const char *const names[] PROGMEM = {i0, i1, i2, i3, i4, i5, i6, i7, i8, i9, i10};
+-const char *const namea[] PROGMEM = {a0, a1, a2, a3, a4, a5, a6};
+-const char *const nameb[] PROGMEM = {b0, b1, b2};
+\ No newline at end of file
++const char i0[] PROGMEM = "Баланс";
++const char i1[] PROGMEM = "Огр. мощности";
++const char i2[] PROGMEM = "?AСинхр. регулировка";
++const char i3[] PROGMEM = "?BАвтопереключение";
++const char i4[] PROGMEM = "ФНЧ";
++const char i5[] PROGMEM = "Яркость дисп.";
++const char i6[] PROGMEM = "Режим индикатора";
++const char i7[] PROGMEM = "?CЭнергосбережение";
++const char i8[] PROGMEM = "Сброс";
++
++const char *const names[] PROGMEM = {i0, i1, i2, i3, i4, i5, i6, i7, i8};
+\ No newline at end of file
+diff --git a/src/main.cpp b/src/main.cpp
+index 93cc70a..6c73189 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -9,11 +9,14 @@
+ #include "config.h"
+ #include "defines.h"
+ #include "localization.h"
+-//#include "freememory.h"
++#include "ds1803.h"
+ #include "UI.h"
+ #include "bitmaps.h"
+-//#include <spiregister.h>
++#include "spiregister.h"
++#include "bluetooth.h"
++#include "amplifier.h"
+ 
++extern volatile unsigned long timer0_millis;
+ // глобальные переменные для ручки управления
+ bool enc_s2;
+ uint8_t ctrl_state;
+@@ -21,38 +24,49 @@ uint32_t hold_timer;
+ // классы
+ UI ui;
+ 
+-void emptyHandler(byte selection) {
+-
++void testHandler(byte selection) {
++  
+ }
++char vol_temp = INIT_VOL_HNDR;
+ 
+-void testHandler(byte selection) {
+-  switch (selection) {
+-    case 0:
+-      ui.createMenu("Рус. яз.", namea, 7, emptyHandler);
+-      break;
+-    case 1:
+-      ui.createMenu("Test submenu", nameb, 3, emptyHandler);
+-      break;
+-    default:
+-      Serial.println(selection);
+-      break;
+-  }
++void crash(byte code) {
++  shifterReset();
++  cli();
++  ui.setCursor(0, 0);
++  ui.print("Error code: ");
++  ui.print(code);
++  ui.print("\r\nStartup failure.");
++  while (1);
+ }
+ 
+ void setup() {
++  // в первую же очередь инициализировать сдвиговый регистр, пока он не включил выводы (по схеме).
++  // пины 11, 12, 13 на выход
++  DDRB |= 0b00111000;
++  shifterReset();
++  
+   ui.init();
+   Wire.setClock(I2C_SPEED_HZ);
+   ui.clear();
+   ui.drawBitmap(0, 0, logo_128x64, 128, 64);
+-
+-  pinMode(A0, INPUT);
+-  pinMode(A1, INPUT);
+-  pinMode(A2, INPUT);
++  Serial.begin(115200);
++  Serial.println("DA50X");
++  // инициализация порта и прерывания ручки управления
++  // пины A0, A1, A2 на вход
++  DDRC &= ~0b00000111;
+   PCMSK1 |= 0b00000101;
+   PCICR |= (1 << 1);
+-  delay(1000);
+-  //ui.clear();
+-  ui.createMenu("арМия", names, 11, testHandler);
++
++  delay(500);
++  bool state = bt_activate();
++  if (!state)
++    crash(97);
++    
++  if (!setVolume(vol_temp))
++    crash(95);
++
++  setAmplifier(true);
++  ui.clear();
+ }
+ 
+ void loop() {
+@@ -61,30 +75,40 @@ void loop() {
+     if (ctrl_state == CTRL_CLICK)
+       ui.click();
+     else if (ctrl_state == CTRL_ROTATING) {
+-      ui.rotate(enc_s2);
++      
++      if (enc_s2 && vol_temp < 100)
++        vol_temp++;
++      else if (vol_temp > 0)
++        vol_temp--;
++
++      if (!setVolume(vol_temp))
++        crash(10);
++
++      ui.renderScale(vol_temp);
++      
++      //ui.rotate(enc_s2);
+     }
+     if (ctrl_state != CTRL_HOLDING)
+       ctrl_state = 0;
+-    else if (millis() - hold_timer > CTRL_HOLD_TIMEOUT_MS) {
++    else if (timer0_millis - hold_timer > CTRL_HOLD_TIMEOUT_MS) {
+       ui.hold();
+       ctrl_state = 0;
+     }
+   }
+-
+ }
+ 
+ // прерывание PORT CHANGE для ручки управления
+ ISR(PCINT1_vect) {
+   // вращение энкодера, проще простого
+-  if(!digitalRead(A0)) {
+-    enc_s2 = !digitalRead(A1);
++  if(!(PINC & 0x01)) {
++    enc_s2 = !((PINC >> 1) & 0x01);
+     ctrl_state = CTRL_ROTATING;
+   }
+ 
+   // обработка кнопки вместе с удержанием, уже посложнее
+-  bool btn_state = !digitalRead(A2);
++  bool btn_state = !((PINC >> 2) & 0x01);
+   if (btn_state) {
+-    hold_timer = millis();
++    hold_timer = timer0_millis;
+     ctrl_state = CTRL_HOLDING;
+   }
+   else if (ctrl_state == CTRL_HOLDING && !btn_state) {
+diff --git a/src/spiregister.h b/src/spiregister.h
+index 5c24865..e8f6f42 100644
+--- a/src/spiregister.h
++++ b/src/spiregister.h
+@@ -1,48 +1,52 @@
+ /*
+  * Файл для работы со сдвиговым регистром в DA50X.
+- * Микросхема 74HC595, интерфейс - аппаратно ускоренный SPI.
++ * Микросхема 74HC595, интерфейс - программно-эмулированный SPI.
+  * 
+  * За некоторую информацию спасибо сайту narodstream:
+  * https://narodstream.ru/avr-urok-25-spi-podklyuchaem-sdvigovyj-registr-74hc595/
+ */
+ 
++#ifndef _spiregister_h
++#define _spiregister_h
++
+ #include <Arduino.h>
+ #include <avr/io.h>
+-// сигналы на выходе регистра
+-#define AMP_STANDBY 0
+-#define AMP_MUTE 1
+-#define DAC_ENABLE 2
+-#define BT_RESET 3
+-#define SIG_SHUTDOWN 4
+-#define SIG_RESET 5
+-#define ACT_LED 6
+-
+-uint8_t _shiftreg_buffer = 0x00;
++#define SOFTSPI_DT_HIGH PORTB |= _BV(PB3)
++#define SOFTSPI_DT_LOW PORTB &= ~_BV(PB3)
++#define SOFTSPI_LT_HIGH PORTB |= _BV(PB4)
++#define SOFTSPI_LT_LOW PORTB &= ~_BV(PB4)
++#define SOFTSPI_CK_HIGH PORTB |= _BV(PB5)
++#define SOFTSPI_CK_LOW PORTB &= ~_BV(PB5)
+ 
+-void _spiSendBuffer() {
+-    SPDR = _shiftreg_buffer;
+-    while (!(SPSR & (1 << SPIF)));
+-    // дёрнуть Latch на регистре
+-    digitalWrite(12, HIGH);
+-    digitalWrite(12, LOW);
+-}
++uint8_t _shiftreg_buffer;
+ 
+-// инициализация шины SPI и обнуление регистра
+-inline void spiRegisterInit() {
+-    digitalWrite(12, LOW);
+-    pinMode(12, OUTPUT); // Latch
+-    pinMode(11, OUTPUT); // Data
+-    pinMode(13, OUTPUT); // Clock
++void _spiSendBuffer()
++{
++    SOFTSPI_LT_LOW;
++    for (byte i = 0; i < 8; i++)
++    {
++        if ((_shiftreg_buffer >> i) & 0x01)
++            SOFTSPI_DT_HIGH;
++        else
++            SOFTSPI_DT_LOW;
+ 
+-    // режим Master, частота шины сокращена до 1 МГц во избежание потерь
+-    SPCR = ((1 << SPE) | (1 << MSTR) | (1 << SPR0));
++        SOFTSPI_CK_HIGH;
++        SOFTSPI_CK_LOW;
++    }
++    SOFTSPI_LT_HIGH;
++}
+ 
+-    // сразу обнулить сдвиговый регистр
++// сброс регистра
++void shifterReset()
++{
++    _shiftreg_buffer = 0x00;
+     _spiSendBuffer();
+ }
+ 
+ // задать состояние вывода внешнего регистра
+-void extWrite(uint8_t pin, bool state) {
++void extWrite(uint8_t pin, bool state)
++{
+     bitWrite(_shiftreg_buffer, pin, state);
+     _spiSendBuffer();
+-}
+\ No newline at end of file
++}
++#endif
+\ No newline at end of file
