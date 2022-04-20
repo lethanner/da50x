@@ -13,18 +13,18 @@
 // extern int rx_char;
 // extern char bt_rx_buffer[16];
 // extern byte rx_buffer_pos, rx_buff_c_pos;
-extern bool bt_universal_bool;
+extern bool bt_pairing_mode;
 extern bool bt_playback_state;
-extern bool bt_data_refresh;
 extern byte bt_conn_count;
 
 bool bt_sendAT(const char *cmd, bool check = true);
-bool bt_activate();
+bool bt_restart();
 bool bt_disable();
-bool bt_enterPairingMode();
-void bt_tick();
+bool bt_gotoPairingMode();
+bool bt_startSPP();
+bool bt_update();
 
-inline void bt_initialize()
+inline void bt_uart_initialize()
 {
     DDRB &= ~_BV(PB0);
     PORTB |= _BV(PB0);

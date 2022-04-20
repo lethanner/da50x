@@ -5,57 +5,96 @@
  * Работа начата: 27.08.2021
 */
 #include <Arduino.h>
+#include "LTDA/LTDA.h"
 #include "UI/UI.h"
-#include "UI/bitmaps.h"
-#include "spiregister.h"
-#include "amplifier.h"
-#include "microDS18B20.h"
 
-MicroDS18B20 heatsink(A3);
+uint32_t debugTimer;
+extern volatile unsigned long timer0_millis;
+// void terminate(byte err_code)
+// {
+//   cli();
+//   srReset();
+//   screen.setCursor(0, 0);
+//   screen.print(F(TT_ERROR));
+//   screen.print(err_code);
+//   while (1)
+//     ;
+// }
 
 // Инициализация устройства
 void setup()
 {
-  // пины 11, 12, 13 на выход
+  /* инициализация сдвигового регистра */
   DDRB |= 0b00111000;
-  // в первую же очередь инициализировать сдвиговый регистр
-  shifterReset();
-  Serial.begin(115200);
-  // иниц. дисплея, а вместе с ним и шины I2C
+  srReset();
+
+  /* инициализация дисплея и отображение логотипа */
   disp_initialize();
   screen.drawBitmap(0, 0, logo_128x64, 128, 64);
-  delay(500);
 
-  ctrl_initialize();
+  Serial.begin(115200);
+
+  /* инициализация датчика температуры */
   heatsink.setResolution(10);
+  // сразу запросить данные от датчика, чтобы к концу инициализации аппарата они уже лежали на столе
   heatsink.requestTemp();
-  // инициализировать модуль Bluetooth
-  bt_initialize();
-  if (!bt_activate())
-    terminate(97);
-  bt_disable();
-  if (!setVolume(INIT_VOL_HNDR))
-    terminate(54);  
-  PORTD &= ~_BV(PD2);
-  if ((PIND >> 2) & 0x01)
-    pendingSourceId = 1;
 
+  /* инициализация АЦП для измерений */
+  // АЦП вкл, ручной режим, прерывания откл, скорость преобразования минимальная (F_CPU / 128, 9.6 кГц)
+  ADCSRA = 0b10000111;
+  // внутренний reference, стандартный байтовый порядок, канал A6
+  ADMUX = 0b11000110;
+  // ну тут опять заранее запрашиваем данные, как и с датчиком температуры...
+  bitSet(ADCSRA, ADSC);
+
+  /* инициализация модуля bluetooth */
+  bt_uart_initialize();
+  if (!bt_restart());
+    // TODO: terminate
+  bt_disable();
+
+  /* инициализация микшерного блока */
+  if (!setMasterVolumeClassic(INIT_VOLUME));
+    // TODO: terminate
+
+  /* автовыбор доступного источника */
+  if (checkInputAvailability(SRC_USB))
+    changeAudioInput(SRC_USB);
+
+  /* инициализация порта и прерывания для энкодера */
+  DDRC &= ~0b00000111;
+  PCMSK1 |= 0b00000101;
+  PCICR |= (1 << 1);
+
+  /* включение усилителя */
   setAmplifier(true);
-  screen.clear();
+
+  /* отрисовка главного экрана */
+  ui_redraw(true);
 }
 
 // Главный цикл программы
 void loop()
 {
-  static uint32_t hsink_refresh_timer = 0;
-  if (timer0_millis - hsink_refresh_timer > 1000) {
-    heatsink_temp = heatsink.getTemp();
-    heatsink.requestTemp();
-    hsink_refresh_timer = timer0_millis;
+  ui_tick();
+  deviceStatusRefresh();
+  
+  if (timer0_millis - debugTimer > 1500)
+  {
+    Serial.println();
+    if (statusRefresh)
+    {
+      Serial.println(F("RF"));
+    }
+    Serial.println(inputVoltage);
+    Serial.println(outLevel);
+    debugTimer = timer0_millis;
   }
 
-  ctrl_update();
-  main_tick();
-  statusbar_tick();
-  bt_tick();
+  if (statusRefresh)
+  {
+    ui_refresh();
+    // TODO: remote refresh
+    statusRefresh = false;
+  }
 }

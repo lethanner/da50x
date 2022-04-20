@@ -1,13 +1,13 @@
 #include "spiregister.h"
 
-uint8_t _shiftreg_buffer;
+uint8_t _sr_buffer;
 
 void _spiSendBuffer()
 {
     SOFTSPI_LT_LOW;
     for (byte i = 0; i < 8; i++)
     {
-        if ((_shiftreg_buffer >> i) & 0x01)
+        if ((_sr_buffer >> i) & 0x01)
             SOFTSPI_DT_HIGH;
         else
             SOFTSPI_DT_LOW;
@@ -19,15 +19,15 @@ void _spiSendBuffer()
 }
 
 // сброс регистра
-void shifterReset()
+void srReset()
 {
-    _shiftreg_buffer = 0x00;
+    _sr_buffer = 0x00;
     _spiSendBuffer();
 }
 
 // задать состояние вывода внешнего регистра
 void extWrite(uint8_t pin, bool state)
 {
-    bitWrite(_shiftreg_buffer, pin, state);
+    bitWrite(_sr_buffer, pin, state);
     _spiSendBuffer();
 }

@@ -10,7 +10,9 @@ byte _entryCount;
 bool _handlerAutoCall;
 int *_menuBooleans;
 
-byte currentScreen = SCREEN_MAIN;
+byte activeSbIcons;
+
+byte screenId = SCREEN_MAIN;
 
 // спасибо чуваку с форума arduino.ru за реализацию strlen() для юникода
 // http://arduino.ru/forum/programmirovanie/pomogite-razobratsya-chto-za-glyuk-co-stringlength#comment-313068
@@ -26,16 +28,7 @@ byte currentScreen = SCREEN_MAIN;
 //     screen.setCursor(64 - ((l * 6) / 2), 0);
 // }
 
-void _drawTitle(const char *title, uint8_t x)
-{
-    screen.rect(0, 0, 127, 7, OLED_FILL);
-    screen.setCursor(x, 0);
-    screen.invertText(1);
-    screen.print(title);
-    screen.invertText(0);
-}
-
-void printPGMLine(uint16_t ptr)
+void ui_printPGMLine(uint16_t ptr)
 {
     char linebuffer[42];
     uint8_t charid = 0;
@@ -67,7 +60,7 @@ void renderMenuEntries()
 
         screen.setCursor(0, currentLine);
         screen.invertText(line == menuChooseId);
-        printPGMLine(ptr);
+        ui_printPGMLine(ptr);
         screen.invertText(0);
 
         if (isBoolEntry)
@@ -116,7 +109,7 @@ void drawBTLogo(bool large)
     }
 }
 
-void createMenu(const char *const *entries, byte entryCount, void (*handler)(byte), const char *title, byte tt_x, bool handlerAutoCall, int *menuBooleans)
+void createMenu(const char *const *entries, byte entryCount, void (*handler)(byte), const __FlashStringHelper *title, byte tt_x, bool handlerAutoCall, int *menuBooleans)
 {
     menuChooseId = menuEntryRendererStartId = menuVisibleSelId = 0;
     _handler = handler;
@@ -125,26 +118,20 @@ void createMenu(const char *const *entries, byte entryCount, void (*handler)(byt
     _menuBooleans = menuBooleans;
     _entryCount = entryCount - 1;
 
-    if (title != NULL)
-        _drawTitle(title, tt_x);
+    if (title != NULL) {
+        screen.rect(0, 0, 127, 7, OLED_FILL);
+        screen.setCursor(tt_x, 0);
+        screen.invertText(1);
+        screen.print(title);
+        screen.invertText(0);
+    }
 
     clearMainArea();
     renderMenuEntries();
-    currentScreen = SCREEN_MENU;
+    screenId = SCREEN_MENU;
 }
 
-void terminate(byte err_code)
-{
-    cli();
-    shifterReset();
-    screen.setCursor(0, 0);
-    screen.print(F(TT_ERROR));
-    screen.print(err_code);
-    while (1)
-        ;
-}
-
-void menuFlip(bool dir)
+void menuRotate(bool dir)
 {
     if (dir)
     { // вправо
@@ -194,3 +181,22 @@ void menuFlip(bool dir)
 //     redrawStatusBar = false;
 //     // TODO: моргание сигнальным светодиодом
 // }
+
+void setStatusbarIcon(byte id, bool state)
+{
+    if (id > 0)
+    {
+        screen.clear(30, 0, 70, 6);
+        bitWrite(activeSbIcons, id-1, state);
+    }
+
+    byte dispStartX = 64;
+    for (byte i = 0; i < 5; i++)
+    {
+        if ((activeSbIcons >> i) & 0x01)
+        {
+            screen.drawBitmap(dispStartX, 0, statusbar_icons[i], 5, 8);
+            dispStartX -= 7;
+        }
+    }
+}

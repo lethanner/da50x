@@ -5,10 +5,9 @@
 #include <GyverOLED.h>
 #include "config.h"
 #include "defines.h"
+#include "bitmaps.h"
 #include "localization.h"
-#include "spiregister.h"
-#include "bluetooth.h"
-#include "ds1803.h"
+#include "LTDA/LTDA.h"
 
 extern GyverOLED<SSD1306_128x64, OLED_NO_BUFFER> screen;
 
@@ -20,19 +19,11 @@ extern void (*_handler)(byte);
 // extern bool _handlerAutoCall;
 // extern int *_menuBooleans;
 
-extern byte currentScreen;
-extern byte pendingSourceId;
-extern bool redrawMainScreen, redrawStatusBar;
-
 // extern bool rot_dir;
 // extern uint8_t ctrl_state;
 // extern uint32_t hold_timer;
 
-extern char heatsink_temp;
-extern byte statusbar_show_icons;
-
-extern byte device_mode;
-//extern uint32_t act_timeout;
+extern byte screenId;
 
 extern volatile unsigned long timer0_millis;
 
@@ -53,37 +44,24 @@ inline bool disp_initialize()
     return true;
 }
 
-void setCursorCenter(const char *text);
-//void _drawTitle(const char *title, byte x);
-void printPGMLine(uint16_t ptr);
-void renderMenuEntries();
+void ui_tick();
+void ui_redraw(bool sb_force = false);
+void ui_refresh();
+void ui_printPGMLine(uint16_t ptr);
 void clearMainArea();
-void activateDisplay();
-void dimmDisplay();
-void menuFlip(bool dir);
+void menuRotate(bool dir);
 
-void createMenu(const char *const *entries, byte entryCount, void (*handler)(byte), const char *title = NULL, byte tt_x = 0, bool handlerAutoCall = false, int *menuBooleans = NULL);
+void createMenu(const char *const *entries, byte entryCount, void (*handler)(byte), const __FlashStringHelper *title = NULL, byte tt_x = 0, bool handlerAutoCall = false, int *menuBooleans = NULL);
 void drawBar(byte val, byte max, byte startX, byte startY);
 void drawBTLogo(bool large = false);
-void terminate(byte err_code);
-//void denySelection();
 
-void main_tick();
-void statusbar_tick();
+void setStatusbarIcon(byte id = 0, bool state = true);
+
 void ctrl_update();
 
 inline void callMenuHandler()
 {
     _handler(menuChooseId);
-}
-
-inline void ctrl_initialize()
-{
-    // пины A0, A1, A2 на вход
-    DDRC &= ~0b00000111;
-    // иниц. прерывания для ручки управления
-    PCMSK1 |= 0b00000101;
-    PCICR |= (1 << 1);
 }
 
 #endif

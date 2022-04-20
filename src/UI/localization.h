@@ -37,6 +37,9 @@ const char fsrc5[] PROGMEM = "USB-накопитель";
 
 #define SOURCE "Источник"
 
+#define WAIT "Подождите..."
+#define WAIT_OFFSET 28
+
 #define BT_SEARCH "Поиск..."
 #define BT_CLICK_TO_PAIR "Нажм. для сопряжения"
 #define BT_PAIRING "Ожидание..."
@@ -44,6 +47,25 @@ const char fsrc5[] PROGMEM = "USB-накопитель";
 #define BT_SEARCH_OFFSET 40
 #define BT_CLICK_TO_PAIR_OFFSET 4
 #define BT_PAIRING_OFFSET 31
+
+#define NOTHING "Ничего нет."
+#define NOTHING_OFFSET 31
+#define AUDIO_ONLY "Только аудио"
+#define AUDIO_ONLY_OFFSET 28
+
+#define DEVICE_MENU "Устройство"
+#define DEVICE_MENU_OFFSET 34
+#define USB_TITLE "USB ЦАП"
+#define USB_TITLE_OFFSET 43
+
+const char srcmenu0[] PROGMEM = "> Источник";
+const char srcmenu1[] PROGMEM = "> Параметры";
+const char srcmenu2[] PROGMEM = "> Выключение";
+
+const char btmenu0[] PROGMEM = "Отключиться";
+const char btmenu1[] PROGMEM = "Сброс сопряжений";
+const char btmenu2[] PROGMEM = "Перезапуск";
+const char btmenu0_1[] PROGMEM = "Подкл. к последн.";
 
 #else // Английский язык
 
@@ -56,12 +78,15 @@ const char fsrc5[] PROGMEM = "USB-накопитель";
 
 const char fsrc0[] PROGMEM = "No input";
 const char fsrc1[] PROGMEM = "USB DAC";
-const char fsrc3[] PROGMEM = "FM-radio";
+const char fsrc3[] PROGMEM = "FM radio";
 const char fsrc4[] PROGMEM = "TF card";
 const char fsrc5[] PROGMEM = "USB flash";
 
 #define SOURCE "Source"
 #define SOURCE_OFFSET 46
+
+#define WAIT "Please wait"
+#define WAIT_OFFSET 31
 
 #define BT_SEARCH "Searching..."
 #define BT_CLICK_TO_PAIR "Click to pair"
@@ -70,6 +95,25 @@ const char fsrc5[] PROGMEM = "USB flash";
 #define BT_SEARCH_OFFSET 28
 #define BT_CLICK_TO_PAIR_OFFSET 25
 #define BT_PAIRING_OFFSET 34
+
+#define NOTHING "Just nothing."
+#define NOTHING_OFFSET 25
+#define AUDIO_ONLY "Audio only"
+#define AUDIO_ONLY_OFFSET 31
+
+#define DEVICE_MENU "Device menu"
+#define DEVICE_MENU_OFFSET 31
+#define USB_TITLE "USB DAC"
+#define USB_TITLE_OFFSET 43
+
+const char srcmenu0[] PROGMEM = "> Source";
+const char srcmenu1[] PROGMEM = "> Settings";
+const char srcmenu2[] PROGMEM = "> Shutdown";
+
+const char btmenu0[] PROGMEM = "Disconnect";
+const char btmenu1[] PROGMEM = "Clear pairs";
+const char btmenu2[] PROGMEM = "Reset";
+const char btmenu0_1[] PROGMEM = "Reconnect to last";
 
 #endif
 
@@ -81,15 +125,28 @@ const char src4[] PROGMEM = "TF";
 const char src5[] PROGMEM = "UDISK";
 
 const char fsrc2[] PROGMEM = "Bluetooth";
-#define BLUETOOTH "Bluetooth(R)"
+#define BLUETOOTH_R "Bluetooth(R)"
 #define BLUETOOTH_OFFSET 28
+#define BT_TITLE "Bluetooth"
+#define BT_TITLE_OFFSET 37
 
 const char *const sb_sources[] PROGMEM = {
     src0, src1, src2, src3, src4, src5
 };
 
 const char *const menu_sources[] PROGMEM = {
-    fsrc0, fsrc1, fsrc2
+    fsrc0, fsrc1, fsrc2, fsrc3, fsrc4, fsrc5
+};
+
+const char *const bt_menu_entr[] PROGMEM = {
+    srcmenu0, srcmenu1, srcmenu2, btmenu0, btmenu1, btmenu2
+};
+const char *const bt_menu_entr_rec[] PROGMEM = {
+    srcmenu0, srcmenu1, srcmenu2, btmenu0_1, btmenu1, btmenu2
+};
+
+const char *const null_src_menu[] PROGMEM = {
+    srcmenu0, srcmenu1, srcmenu2
 };
 
 #endif

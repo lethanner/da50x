@@ -19,7 +19,7 @@
 #define SOFTSPI_CK_HIGH PORTB |= _BV(PB5)
 #define SOFTSPI_CK_LOW PORTB &= ~_BV(PB5)
 
-void shifterReset();
+void srReset();
 void extWrite(uint8_t pin, bool state);
 
 #endif
