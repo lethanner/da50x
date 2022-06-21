@@ -10,16 +10,6 @@
 
 uint32_t debugTimer;
 extern volatile unsigned long timer0_millis;
-// void terminate(byte err_code)
-// {
-//   cli();
-//   srReset();
-//   screen.setCursor(0, 0);
-//   screen.print(F(TT_ERROR));
-//   screen.print(err_code);
-//   while (1)
-//     ;
-// }
 
 // Инициализация устройства
 void setup()
@@ -49,13 +39,11 @@ void setup()
 
   /* инициализация модуля bluetooth */
   bt_uart_initialize();
-  if (!bt_restart());
-    // TODO: terminate
+  bt_restart();
   bt_disable();
 
   /* инициализация микшерного блока */
-  if (!setMasterVolumeClassic(INIT_VOLUME));
-    // TODO: terminate
+  setMasterVolumeClassic(INIT_VOLUME);
 
   /* автовыбор доступного источника */
   if (checkInputAvailability(SRC_USB))
@@ -82,10 +70,6 @@ void loop()
   if (timer0_millis - debugTimer > 1500)
   {
     Serial.println();
-    if (statusRefresh)
-    {
-      Serial.println(F("RF"));
-    }
     Serial.println(inputVoltage);
     Serial.println(outLevel);
     debugTimer = timer0_millis;

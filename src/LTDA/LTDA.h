@@ -8,6 +8,7 @@
 #include "spiregister.h"
 #include "microDS18B20.h"
 #include "bluetooth.h"
+#include "errorHandler.h"
 
 extern byte volMaster;
 extern byte curInput;
@@ -18,9 +19,9 @@ extern uint16_t inputVoltage, outLevel;
 extern MicroDS18B20 heatsink;
 
 void deviceStatusRefresh();
-bool setMasterVolume(byte val);
-bool setMasterVolumeClassic(byte vol);
-bool changeVolume(bool dir);
+void setMasterVolume(byte val);
+void setMasterVolumeClassic(byte vol);
+void changeVolume(bool dir);
 bool checkInputAvailability(byte src_id);
 void changeAudioInput(byte src_id);
 void setAmplifier(bool state);

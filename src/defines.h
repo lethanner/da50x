@@ -26,11 +26,4 @@
 #define SRC_TF 4
 #define SRC_UDISK 5
 
-// статусы блютуз модуля
-// #define BT_NO_DATA 0
-// #define BT_CONNECT 1
-// #define BT_DISCONNECT 2
-// #define BT_PLAY 3
-// #define BT_STOP 4
-
 #endif

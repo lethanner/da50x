@@ -6,6 +6,7 @@
 #include "config.h"
 #include "defines.h"
 #include "spiregister.h"
+#include "errorHandler.h"
 
 #define BT_TX_HIGH PORTD |= _BV(PD4)
 #define BT_TX_LOW PORTD &= ~_BV(PD4)
@@ -17,12 +18,12 @@ extern bool bt_pairing_mode;
 extern bool bt_playback_state;
 extern byte bt_conn_count;
 
-bool bt_sendAT(const char *cmd, bool check = true);
-bool bt_restart();
-bool bt_disable();
-bool bt_gotoPairingMode();
-bool bt_startSPP();
-bool bt_update();
+void bt_sendAT(const char *cmd, bool check = true);
+void bt_restart();
+void bt_disable();
+void bt_gotoPairingMode();
+void bt_startSPP();
+void bt_update();
 
 inline void bt_uart_initialize()
 {

@@ -11,7 +11,7 @@ uint32_t actTimer;
 ISR(PCINT1_vect)
 {
     // вращение энкодера, проще простого
-    if (!(PINC & 0x01))
+    if (!(PINC & 0x01) && ctrl_state == 0)
     {
         rot_dir = !((PINC >> 1) & 0x01);
         ctrl_state = CTRL_ROTATING;
@@ -91,6 +91,7 @@ void _hBluetooth(byte id)
             bt_sendAT("CC"); // reconnect
         break;
     case 4:
+        // TODO: clear pairs
         break;
     case 5:
         bt_restart();
@@ -243,7 +244,7 @@ void ui_refresh()
     {
     /* Информация о Bluetooth-соединении */
     case SRC_BT:
-        screen.clear(0, 47, 127, 63); // опять стирать всю инфу с дисплея и рисовать заново... а ведь всего лишь обновилось состояние воспроизведения...
+        screen.clear(0, 51, 127, 63); // опять стирать всю инфу с дисплея и рисовать заново... а ведь всего лишь обновилось состояние воспроизведения...
         if (bt_conn_count > 0)
         {
             screen.setCursor(0, 7);

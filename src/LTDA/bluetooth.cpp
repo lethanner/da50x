@@ -14,6 +14,7 @@ bool rx_comm_ok;
 char bt_rx_buffer[48];
 unsigned long autopair_timer;
 extern volatile unsigned long timer0_millis;
+extern bool statusRefresh;
 
 ISR(TIMER1_A)
 {
@@ -80,14 +81,14 @@ ISR(PCINT2_vect)
     }
 }
 
-bool bt_update()
+void bt_update()
 {
     rx_comm_ok = false; // ну такое...
     if (!rx_data_ready)
     {
         if (!bt_pairing_mode && timer0_millis - autopair_timer > BT_AUTOCONNECT_TIMEOUT_MS)
             bt_gotoPairingMode();
-        return false;
+        return;
     }
 
     // обработка команд
@@ -124,15 +125,21 @@ bool bt_update()
      * 
      * Интересно, как называется такой буфер?
      */
+    //Serial.print("B: ");
+    //Serial.println(bt_rx_buffer);
     byte _p_length = strlen(bt_rx_buffer) + 1;
     if (_p_length < rx_buffer_pos) {
         memmove(bt_rx_buffer, bt_rx_buffer + _p_length, 48 - _p_length);
         rx_buffer_pos -= _p_length;
     }
-    else
+    else {
+        rx_buffer_pos = 0;
         rx_data_ready = false;
+    }
 
-    return true;
+    //Serial.print("A: ");
+    //Serial.println(bt_rx_buffer);
+    statusRefresh = true;
 }
 
 // софтверная передача байта по UART на скорости примерно 9600 бод.
@@ -175,49 +182,48 @@ bool _bt_okWait()
     return rx_comm_ok;
 }
 
-bool bt_sendAT(const char *cmd, bool check)
+void bt_sendAT(const char *cmd, bool check)
 {
     _bt_printLine("AT+");
     _bt_printLine(cmd);
     _bt_writeChar('\r');
     _bt_writeChar('\n');
 
-    if (check)
-        return _bt_okWait();
-    else
-        return true;
+    if (check && !_bt_okWait())
+        terminate(10);
 }
 
-bool bt_disable()
+void bt_disable()
 {
-    if (!bt_sendAT("CP"))
-        return false;
+    bt_sendAT("CP");
     delay(100);
     extWrite(EXT_BT_ENABLE, false);
     bt_pairing_mode = true; // пока что костыль, чтобы таймер pairing mode не срабатывал при bt_update(), если модуль отключен.
-    return true;
 }
 
-bool bt_restart()
+void bt_restart()
 {
     extWrite(EXT_BT_ENABLE, false);
     delay(100);
     extWrite(EXT_BT_ENABLE, true);
 
     bt_conn_count = 0;
-    bt_pairing_mode = bt_playback_state = false;
-
-    return _bt_okWait();
+    rx_comm_ok = bt_pairing_mode = bt_playback_state = false;
+    autopair_timer = timer0_millis;
+    if (!_bt_okWait())
+        terminate(2);
 }
 
-bool bt_gotoPairingMode()
+void bt_gotoPairingMode()
 {
     bt_pairing_mode = true;
-    return bt_sendAT("CA");
+    statusRefresh = true;
+    bt_sendAT("CA");
 }
 
-bool bt_startSPP()
+void bt_startSPP()
 {
     _bt_printLine("APT+SPP8888");
-    return _bt_okWait();
+    if (!_bt_okWait())
+        terminate(10);
 }

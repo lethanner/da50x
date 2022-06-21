@@ -13,33 +13,34 @@ extern volatile unsigned long timer0_millis;
 
 /* Микшер */
 // установка значения громкости мастер-канала в пределах 0-255
-bool setMasterVolume(byte val)
+void setMasterVolume(byte val)
 {
     Wire.beginTransmission(DIGIPOT_MASTER_I2C);
     Wire.write(0b10101111); // команда на запись обеих потенциометров
     Wire.write(val);
 
-    volMaster = val;
     statusRefresh = true;
-    return (Wire.endTransmission() == 0);
+    if (Wire.endTransmission() != 0)
+        terminate(1);
 }
 
 // установка значения громкости мастер-канала в пределах 0-100%
-bool setMasterVolumeClassic(byte vol)
+void setMasterVolumeClassic(byte vol)
 {
+    volMaster = vol;
     vol = map(vol, 0, 100, 0, 255);
-    return setMasterVolume(vol);
+    setMasterVolume(vol);
 }
 
-bool changeVolume(bool dir)
+void changeVolume(bool dir)
 {
-    byte newVol;
+    uint8_t newVol;
     if (!dir && volMaster > 0)
         newVol = volMaster - 1;
     if (dir && volMaster < 100)
         newVol = volMaster + 1;
 
-    return setMasterVolumeClassic(newVol);
+    setMasterVolumeClassic(newVol);
 }
 
 // управление питанием усилителя
@@ -53,7 +54,7 @@ void setAmplifier(bool state)
     delay(150);
     extWrite(state ? EXT_AMP_MUTE : EXT_AMP_STANDBY, state);
 
-    ampEnabled = true;
+    ampEnabled = state;
     statusRefresh = true;
 }
 
@@ -81,7 +82,7 @@ void changeAudioInput(byte src_id)
         extWrite(EXT_USB_ENABLE, false);
         break;
     case SRC_BT:
-        // TODO: выключение bluetooth
+        bt_disable();
         break;
     }
 
@@ -92,7 +93,7 @@ void changeAudioInput(byte src_id)
         extWrite(EXT_USB_ENABLE, true);
         break;
     case SRC_BT:
-        // TODO: включение bluetooth
+        bt_restart();
         break;
     }
 
@@ -130,4 +131,7 @@ void deviceStatusRefresh()
         }
         bitSet(ADCSRA, ADSC);
     }
+
+    if (curInput == SRC_BT)
+        bt_update();
 }
