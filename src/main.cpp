@@ -8,9 +8,6 @@
 #include "LTDA/LTDA.h"
 #include "UI/UI.h"
 
-uint32_t debugTimer;
-extern volatile unsigned long timer0_millis;
-
 // Инициализация устройства
 void setup()
 {
@@ -18,24 +15,39 @@ void setup()
   DDRB |= 0b00111000;
   srReset();
 
-  /* инициализация дисплея и отображение логотипа */
-  disp_initialize();
-  screen.drawBitmap(0, 0, logo_128x64, 128, 64);
+  //Serial.begin(115200);
 
-  Serial.begin(115200);
+  /* инициализация дисплея и отображение логотипа */
+  if (!disp_initialize())
+  {
+    while(1) {
+      setIndicator(true);
+      delay(250);
+      setIndicator(false);
+      delay(250);
+      setIndicator(true);
+      delay(250);
+      setIndicator(false);
+      delay(750);
+    }
+  }
+  screen.drawBitmap(0, 0, logo_128x64, 128, 64);
 
   /* инициализация датчика температуры */
   heatsink.setResolution(10);
   // сразу запросить данные от датчика, чтобы к концу инициализации аппарата они уже лежали на столе
   heatsink.requestTemp();
 
+  delay(500);
+  setIndicator(true);
+
   /* инициализация АЦП для измерений */
   // АЦП вкл, ручной режим, прерывания откл, скорость преобразования минимальная (F_CPU / 128, 9.6 кГц)
-  ADCSRA = 0b10000111;
+  //ADCSRA = 0b10000111;
   // внутренний reference, стандартный байтовый порядок, канал A6
-  ADMUX = 0b11000110;
+  //ADMUX = 0b11000110;
   // ну тут опять заранее запрашиваем данные, как и с датчиком температуры...
-  bitSet(ADCSRA, ADSC);
+  //bitSet(ADCSRA, ADSC);
 
   /* инициализация модуля bluetooth */
   bt_uart_initialize();
@@ -45,9 +57,12 @@ void setup()
   /* инициализация микшерного блока */
   setMasterVolumeClassic(INIT_VOLUME);
 
-  /* автовыбор доступного источника */
+  /* автовыбор доступного источника + настройка прерываний для автопереключения */
+  DDRB &= ~0x01;
   if (checkInputAvailability(SRC_USB))
     changeAudioInput(SRC_USB);
+  // PCMSK0 = 0x01;
+  // PCICR |= 0x01;
 
   /* инициализация порта и прерывания для энкодера */
   DDRC &= ~0b00000111;
@@ -57,28 +72,35 @@ void setup()
   /* включение усилителя */
   setAmplifier(true);
 
+  /* включение индикатора мониторинга */
+  setMonitoring(true);
+
   /* отрисовка главного экрана */
   ui_redraw(true);
+  setIndicator(false);
 }
 
+uint32_t debugTimer;
 // Главный цикл программы
 void loop()
 {
   ui_tick();
-  deviceStatusRefresh();
-  
-  if (timer0_millis - debugTimer > 1500)
-  {
-    Serial.println();
-    Serial.println(inputVoltage);
-    Serial.println(outLevel);
-    debugTimer = timer0_millis;
-  }
+  hardware_tick();
 
-  if (statusRefresh)
-  {
+  if (statusRefresh == 1) // онли статусбар
+    ui_refresh(false);
+  else if (statusRefresh == 2) // апдейт существующего содержимого на экране
     ui_refresh();
-    // TODO: remote refresh
-    statusRefresh = false;
-  }
+  else if (statusRefresh == 3) // фулл перерисовка
+    ui_redraw(true);
+  // TODO: remote refresh
+  statusRefresh = 0;
+  
+  // if (timer0_millis - debugTimer > 500)
+  // {
+  //   Serial.println(inputVoltage);
+  //   Serial.println(outLevel);
+  //   Serial.println();
+  //   debugTimer = timer0_millis;
+  // }
 }

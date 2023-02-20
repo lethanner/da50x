@@ -15,10 +15,12 @@
 // выводы сдвигового регистра
 #define EXT_BT_ENABLE 7
 #define EXT_USB_ENABLE 6
+#define EXT_INDICATOR 5
+#define EXT_MON_ENABLE 2
 #define EXT_AMP_STANDBY 0
 #define EXT_AMP_MUTE 1
 
-// ария
+// источники под id'ами
 #define SRC_NULL 0
 #define SRC_USB 1
 #define SRC_BT 2

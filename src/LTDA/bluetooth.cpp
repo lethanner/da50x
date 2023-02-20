@@ -14,7 +14,7 @@ bool rx_comm_ok;
 char bt_rx_buffer[48];
 unsigned long autopair_timer;
 extern volatile unsigned long timer0_millis;
-extern bool statusRefresh;
+extern byte statusRefresh;
 
 ISR(TIMER1_A)
 {
@@ -94,8 +94,10 @@ void bt_update()
     // обработка команд
     if (strcmp(bt_rx_buffer, "ON") == 0 || strcmp(bt_rx_buffer, "OK") == 0)
         rx_comm_ok = true;
-    else if (strcmp(bt_rx_buffer, "II") == 0) // подключение протокола
+    else if (strcmp(bt_rx_buffer, "II") == 0) { // подключение протокола
         bt_conn_count++;
+        bt_pairing_mode = true; // костыль... чтобы не срабатывал таймер окончания режима автопоиска
+    }
     else if (strcmp(bt_rx_buffer, "IA") == 0 && bt_conn_count > 0) // отключение протокола
     {
         bt_conn_count--;
@@ -139,7 +141,7 @@ void bt_update()
 
     //Serial.print("A: ");
     //Serial.println(bt_rx_buffer);
-    statusRefresh = true;
+    statusRefresh = 2;
 }
 
 // софтверная передача байта по UART на скорости примерно 9600 бод.
@@ -217,7 +219,7 @@ void bt_restart()
 void bt_gotoPairingMode()
 {
     bt_pairing_mode = true;
-    statusRefresh = true;
+    statusRefresh = 2;
     bt_sendAT("CA");
 }
 

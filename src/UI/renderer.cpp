@@ -9,10 +9,15 @@ const char *const *_entries;
 byte _entryCount;
 bool _handlerAutoCall;
 int *_menuBooleans;
+int _menuBoolsLast;
 
 byte activeSbIcons;
-
 byte screenId = SCREEN_MAIN;
+
+bool displayActive;
+uint32_t dimmTimer;
+
+uint32_t blinkTimer;
 
 // спасибо чуваку с форума arduino.ru за реализацию strlen() для юникода
 // http://arduino.ru/forum/programmirovanie/pomogite-razobratsya-chto-za-glyuk-co-stringlength#comment-313068
@@ -73,6 +78,9 @@ void renderMenuEntries()
         }
         currentLine++;
     }
+    
+    if (_menuBooleans != NULL)
+        _menuBoolsLast = *_menuBooleans;
 }
 
 void clearMainArea()
@@ -175,12 +183,6 @@ void menuRotate(bool dir)
     if (_handlerAutoCall)
         callMenuHandler();
 }
-// void denySelection()
-// {
-//     redrawMainScreen = false;
-//     redrawStatusBar = false;
-//     // TODO: моргание сигнальным светодиодом
-// }
 
 void setStatusbarIcon(byte id, bool state)
 {
@@ -199,4 +201,37 @@ void setStatusbarIcon(byte id, bool state)
             dispStartX -= 7;
         }
     }
+}
+
+void callMenuHandler()
+{
+    _handler(menuChooseId);
+    if (_menuBooleans != NULL && *_menuBooleans != _menuBoolsLast)
+        renderMenuEntries();
+}
+
+void reactivateDisplay()
+{
+    dimmTimer = timer0_millis;
+    if (displayActive)
+        return;
+
+    //screen.setPower(true);
+    screen.setContrast(127);
+    displayActive = true;
+}
+
+void dimmDisplay()
+{
+    if (displayActive && timer0_millis - dimmTimer > DISP_AUTO_DIMM_TIMEOUT_MS)
+    {
+        screen.setContrast(10);
+        displayActive = false;
+    }
+}
+
+// тут потом ещё будет blink и всё такое прочее
+void setIndicator(bool state)
+{
+    extWrite(EXT_INDICATOR, state);
 }

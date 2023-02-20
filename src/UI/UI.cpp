@@ -7,6 +7,8 @@ uint32_t hold_timer;
 
 uint32_t actTimer;
 
+uint8_t temperatureBlink = 0;
+
 // прерывание PORT CHANGE для ручки управления
 ISR(PCINT1_vect)
 {
@@ -25,12 +27,20 @@ ISR(PCINT1_vect)
     }
     else if (ctrl_state == CTRL_HOLDING && !btn_state)
         ctrl_state = CTRL_CLICK;
+
+    reactivateDisplay();
 }
 
 void _hSource(byte id)
 {
     if (!checkInputAvailability(id))
         return;
+
+    if (id == curInput)
+    {
+        ui_redraw(true);
+        return;
+    }
 
     clearMainArea();
     switch (id)
@@ -47,23 +57,38 @@ void _hSource(byte id)
     }
 
     changeAudioInput(id);
-    ui_redraw(true);
+}
+
+void _hSettings(byte id)
+{
+    switch (id)
+    {
+    case 0: // autoswitch
+        bitToggle(deviceSettings, ALLOW_AUTOSWITCH);
+        break;
+    case 1: // monitoring
+        setMonitoring(!(bitRead(deviceSettings, ENABLE_MONITORING)));
+        break;
+    case 2: // LPF
+        // TODO...
+        break;
+    }
 }
 
 bool _hThreeEntries(byte id)
 {
-    if (id > 2)
+    if (id > 3)
         return false;
 
     switch (id)
     {
-    case 0:
+    case 0: // source
         createMenu(menu_sources, 3, _hSource, F(SOURCE), SOURCE_OFFSET);
         break;
-    case 1:
-        // TODO
+    case 1: // settings
+        createMenu(settings_menu, 3, _hSettings, F(SETTINGS), SETTINGS_OFFSET, false, &deviceSettings);
         break;
-    case 2:
+    case 2: // shutdown
         // TODO
         break;
     }
@@ -84,16 +109,16 @@ void _hBluetooth(byte id)
 
     switch (id)
     {
-    case 3:
-        if (bt_conn_count > 0) 
+    case 4:
+        if (bt_conn_count > 0)
             bt_sendAT("CD"); // disconnect
         else
             bt_sendAT("CC"); // reconnect
         break;
-    case 4:
+    case 5:
         // TODO: clear pairs
         break;
-    case 5:
+    case 6:
         bt_restart();
         break;
     }
@@ -101,10 +126,10 @@ void _hBluetooth(byte id)
     ui_redraw(true);
 }
 
-void ui_redraw(bool sb_force)
+void ui_redraw(bool hard)
 {
-    // перерисовка статусной строки, если надо
-    if (screenId > SCREEN_ACTION || sb_force)
+    // хард рэдроу.
+    if (screenId > SCREEN_ACTION || hard)
     {
         screen.clear(0, 0, 127, 7);
         screen.setCursor(0, 0);
@@ -116,6 +141,7 @@ void ui_redraw(bool sb_force)
         screen.print(F("'C"));
 
         setStatusbarIcon();
+        reactivateDisplay();
     }
 
     /* Отрисовка статичной информации дисплея */
@@ -186,7 +212,8 @@ void ui_tick()
         ctrl_state = 0;
     else if (timer0_millis - hold_timer > CTRL_HOLD_TIMEOUT_MS)
     {
-        switch (screenId) {
+        switch (screenId)
+        {
         case SCREEN_MAIN:
             switch (curInput)
             {
@@ -197,7 +224,7 @@ void ui_tick()
                 createMenu(null_src_menu, 3, _hTEOnly, F(USB_TITLE), USB_TITLE_OFFSET);
                 break;
             case SRC_BT:
-                createMenu((bt_conn_count > 0) ? bt_menu_entr : bt_menu_entr_rec, 6, _hBluetooth, F(BT_TITLE), BT_TITLE_OFFSET);
+                createMenu((bt_conn_count > 0) ? bt_menu_entr : bt_menu_entr_rec, 7, _hBluetooth, F(BT_TITLE), BT_TITLE_OFFSET);
                 break;
             }
             break;
@@ -211,9 +238,34 @@ void ui_tick()
 
     if (screenId == SCREEN_ACTION && timer0_millis - actTimer > ACT_AUTOCLOSE_TIMEOUT_MS)
         ui_redraw();
+
+    /* Моргание индикатором и значением температуры, если она выше предела варнинга */
+    // TODO: можно и не моргать, если перегретый усилок отключен
+    if (hsTemp > TEMP_MAX_WARNING)
+    {
+        if (timer0_millis - blinkTimer > 1000) {
+            if (temperatureBlink < 2)
+                temperatureBlink = 2;
+            else
+                temperatureBlink = 1;
+
+            setIndicator((bool)(temperatureBlink - 1));
+            ui_refresh(false);
+            reactivateDisplay();
+            blinkTimer = timer0_millis;
+        }
+    }
+    else if (temperatureBlink > 0)
+    {
+        temperatureBlink = 0;
+        setIndicator(false);
+        ui_refresh(false);
+    }
+
+    dimmDisplay();
 }
 
-void ui_refresh()
+void ui_refresh(bool fullRefresh)
 {
     if (screenId > SCREEN_ACTION)
         return;
@@ -221,7 +273,7 @@ void ui_refresh()
     /* Обновление статусной строки */
     // ЗНАЧКИ!
     setStatusbarIcon(1, ampEnabled);
-    
+
     // значение громкости
     screen.setCursor(73, 0);
     if (volMaster < 100)
@@ -232,12 +284,17 @@ void ui_refresh()
 
     // значение температуры
     screen.setCursor(103, 0);
-    if (hsTemp < 10 && hsTemp > -1)
-        screen.print(' ');
-    screen.print(hsTemp > 99 ? 99 : hsTemp);
+    if (temperatureBlink == 1)
+        screen.print("  ");
+    else
+    {
+        if (hsTemp < 10 && hsTemp > -1)
+            screen.print(' ');
+        screen.print(hsTemp > 99 ? 99 : hsTemp);
+    }
 
     /* Обновление основной части экрана, если надо */
-    if (screenId > SCREEN_MAIN)
+    if (fullRefresh && screenId > SCREEN_MAIN)
         return;
 
     switch (curInput)

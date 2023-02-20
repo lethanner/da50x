@@ -22,6 +22,7 @@ extern void (*_handler)(byte);
 // extern bool rot_dir;
 // extern uint8_t ctrl_state;
 // extern uint32_t hold_timer;
+extern uint32_t blinkTimer;
 
 extern byte screenId;
 
@@ -46,7 +47,7 @@ inline bool disp_initialize()
 
 void ui_tick();
 void ui_redraw(bool sb_force = false);
-void ui_refresh();
+void ui_refresh(bool fullRefresh = true);
 void ui_printPGMLine(uint16_t ptr);
 void clearMainArea();
 void menuRotate(bool dir);
@@ -59,9 +60,11 @@ void setStatusbarIcon(byte id = 0, bool state = true);
 
 void ctrl_update();
 
-inline void callMenuHandler()
-{
-    _handler(menuChooseId);
-}
+void callMenuHandler();
+
+void reactivateDisplay();
+void dimmDisplay();
+
+void setIndicator(bool state);
 
 #endif
