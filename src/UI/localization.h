@@ -72,6 +72,16 @@ const char btmenu0_1[] PROGMEM = "Подкл. к последн.";
 const char settings_m0[] PROGMEM = "?AАвтопереключение";
 const char settings_m1[] PROGMEM = "?BМониторинг";
 const char settings_m2[] PROGMEM = "Настр. ФНЧ";
+const char settings_m3[] PROGMEM = "?CТолько ЦАП";
+
+#define DAC_ONLY_MARKER "внешн."
+#define DAC_ONLY_MARKER_OFFSET 91
+#define DAC_ONLY_VOLUME_REJECT "Недоступно"
+#define DAC_ONLY_VOLUME_REJECT_2 "в этом режиме"
+#define DAC_ONLY_VOLUME_REJECT_OFFSET 34
+#define DAC_ONLY_VOLUME_REJECT_2_OFFSET 25
+
+#define ALL_F____D_UP "Напряжение линии\n5В недостаточно\nдля работы DA50X.\n\nТребуется замена\nисточника питания"
 
 #else // Английский язык
 
@@ -124,14 +134,25 @@ const char btmenu0_1[] PROGMEM = "Reconnect to last";
 const char settings_m0[] PROGMEM = "?AAuto switch";
 const char settings_m1[] PROGMEM = "?BMonitoring";
 const char settings_m2[] PROGMEM = "LPF cutoff";
+const char settings_m3[] PROGMEM = "?CDAC-only mode";
 
 #endif
 
+const char settings_m4[] PROGMEM = "Debug";
 const char fsrc2[] PROGMEM = "Bluetooth";
 #define BLUETOOTH_R "Bluetooth(R)"
 #define BLUETOOTH_OFFSET 28
 #define BT_TITLE "Bluetooth"
 #define BT_TITLE_OFFSET 37
+
+#define DAC_ONLY_MARKER "DAC-only"
+#define DAC_ONLY_MARKER_OFFSET 79
+#define DAC_ONLY_VOLUME_REJECT "Not available"
+#define DAC_ONLY_VOLUME_REJECT_2 "in this mode."
+#define DAC_ONLY_VOLUME_REJECT_OFFSET 25
+#define DAC_ONLY_VOLUME_REJECT_2_OFFSET 25
+
+#define ALL_F____D_UP "Insufficient 5V\nrail voltage has\nbeen detected.\nDA50X functions\ncan not be used.\n\nREPLACE POWER SUPPLY"
 
 const char src0[] PROGMEM = "null";
 const char src1[] PROGMEM = "USB";
@@ -162,7 +183,7 @@ const char *const null_src_menu[] PROGMEM = {
 };
 
 const char *const settings_menu[] PROGMEM = {
-    settings_m0, settings_m1, settings_m2
+    settings_m0, settings_m1, settings_m2, settings_m3, settings_m4
 };
 
 #endif

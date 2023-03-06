@@ -13,6 +13,10 @@ int _menuBoolsLast;
 
 byte activeSbIcons;
 byte screenId = SCREEN_MAIN;
+byte actionId;
+
+uint16_t actionRefreshRate;
+uint32_t actionRefreshTimer;
 
 bool displayActive;
 uint32_t dimmTimer;
@@ -117,6 +121,21 @@ void drawBTLogo(bool large)
     }
 }
 
+/**
+ * Вызов меню на экране устройства.
+ * 
+ * @param entries Указатель на PROGMEM-массив с текстами для строк меню.
+ * @param entryCount Количество строк меню.
+ * @param handler Функция, принимающая аргумент типа byte, которая будет вызвана при
+ *      выборе пункта меню пользователем. В аргумент передаётся номер выбранного пункта.
+ * @param title Заголовок меню с F-макро (FlashStringHelper).
+ * @param tt_x Смещение заголовка от левого края дисплея в пикселях (обычно используется
+ *      для его размещения посередине, а вообще это какой-то костыль).
+ * @param handlerAutoCall Автоматически вызывать handler при каждом перемещении по пунктам
+ *      меню.
+ * @param menuBooleans Указатель на двухбайтовую переменную, хранящую биты состояний для
+ *      пунктов меню типа "включено-выключено".
+*/
 void createMenu(const char *const *entries, byte entryCount, void (*handler)(byte), const __FlashStringHelper *title, byte tt_x, bool handlerAutoCall, int *menuBooleans)
 {
     menuChooseId = menuEntryRendererStartId = menuVisibleSelId = 0;
@@ -126,14 +145,9 @@ void createMenu(const char *const *entries, byte entryCount, void (*handler)(byt
     _menuBooleans = menuBooleans;
     _entryCount = entryCount - 1;
 
-    if (title != NULL) {
-        screen.rect(0, 0, 127, 7, OLED_FILL);
-        screen.setCursor(tt_x, 0);
-        screen.invertText(1);
-        screen.print(title);
-        screen.invertText(0);
-    }
-
+    if (title != NULL)
+        drawTitle(title, tt_x);
+        
     clearMainArea();
     renderMenuEntries();
     screenId = SCREEN_MENU;
@@ -230,8 +244,38 @@ void dimmDisplay()
     }
 }
 
-// тут потом ещё будет blink и всё такое прочее
+/**
+ * Управление сигнальным светодиодом передней панели.
+ * 
+ * @param state Состояние светодиода, true/false
+ * @param onInterval Интервал (в мс), в течение которого светодиод будет включен
+ * @param blinkTimes Количество вспышек светодиода (0 - бесконечно)
+ * @param offInterval Интервал (в мс), в течение которого светодиод будет выключен (при мигании)
+ * @param repeatInterval Интервал (в мс), через который вспышки будут повторяться (0 - не повторять)
+ * @param override Приоритет мигания светодиода для заданного сценария
+ *      (0 - без приоритета, 1 - игнорировать последующие вызовы функции без
+ *      override, 2 - приостановить всю программу при выполнении сценария)
+*/
 void setIndicator(bool state)
 {
     extWrite(EXT_INDICATOR, state);
+}
+
+void initializeMenuAction(const __FlashStringHelper *title, byte tt_x, byte actId, uint16_t refreshRate_ms)
+{
+    drawTitle(title, tt_x);
+    actionRefreshRate = refreshRate_ms;
+    //actionRefreshTimer = timer0_millis;
+    actionId = actId;
+    screenId = SCREEN_MENU_ACT;
+    clearMainArea();
+}
+
+void drawTitle(const __FlashStringHelper *title, uint8_t offset)
+{
+    screen.rect(0, 0, 127, 7, OLED_FILL);
+    screen.setCursor(offset, 0);
+    screen.invertText(1);
+    screen.print(title);
+    screen.invertText(0);
 }

@@ -3,9 +3,9 @@
 byte volMaster;
 byte curInput = 0;
 byte statusRefresh;
-bool ampEnabled, monLastState;
+bool ampEnabled;
 int8_t hsTemp, _hsTemp;
-uint16_t inputVoltage, outLevel;
+uint16_t inputVoltageADC;
 int deviceSettings = 1;
 
 MicroDS18B20 heatsink(A3);
@@ -50,7 +50,7 @@ void changeVolume(bool dir)
 // управление питанием усилителя
 void setAmplifier(bool state)
 {
-    if (ampEnabled == state)
+    if (ampEnabled == state || (bitRead(deviceSettings, DAC_ONLY_MODE) && state))
         return;
         
     // Таков порядок подачи сигналов на микросхему усилителя.
@@ -58,12 +58,9 @@ void setAmplifier(bool state)
     // Даташит: https://www.st.com/resource/en/datasheet/tda7297.pdf
 
     if (!state)
-    {
-        monLastState = bitRead(deviceSettings, ENABLE_MONITORING);
-        setMonitoring(false);
-    }
-    else
-        setMonitoring(monLastState);
+        extWrite(EXT_MON_ENABLE, false);
+    else if (bitRead(deviceSettings, ENABLE_MONITORING))
+        extWrite(EXT_MON_ENABLE, true);
 
     extWrite(state ? EXT_AMP_STANDBY : EXT_AMP_MUTE, state);
     delay(150);
@@ -144,15 +141,20 @@ void hardware_tick()
     //     if (ADMUX & 0x01) // канал A6 (напряжение)
     //     {
     //         outLevel = adcData;
-    //         ADMUX = 0b11100111; // переключаемся на A7
+    //         ADMUX = 0b01000111; // переключаемся на A7
     //     }
     //     else // канал А7 (аудио)
     //     {
     //         inputVoltage = adcData * 18;
-    //         ADMUX = 0b11100110; // переключаемся на A6
+    //         ADMUX = 0b01000110; // переключаемся на A6
     //     }
     //     bitSet(ADCSRA, ADSC);
     // }
+    if (bit_is_clear(ADCSRA, ADSC))
+    {
+        inputVoltageADC = ADC;
+        bitSet(ADCSRA, ADSC);
+    }
 
     /* Обновление данных с Bluetooth, если это необходимо */
     if (curInput == SRC_BT)
@@ -178,4 +180,27 @@ void setMonitoring(bool state)
 {
     extWrite(EXT_MON_ENABLE, state);
     bitWrite(deviceSettings, ENABLE_MONITORING, state);
+}
+
+void toggleDACOnlyMode() {
+    bool oldState = bitRead(deviceSettings, DAC_ONLY_MODE);
+    bitWrite(deviceSettings, DAC_ONLY_MODE, !oldState);
+    if (oldState)
+    {
+        if (curInput != SRC_NULL)
+            setAmplifier(true);
+        setMasterVolumeClassic(INIT_VOLUME);
+    }
+    else
+    {
+        setAmplifier(false);
+        setMasterVolume(0);
+    }
+    statusRefresh = 1;
+}
+
+uint16_t readDeviceVcc()
+{
+    uint16_t vcc = ((uint32_t)inputVoltageADC * READ_VCC_CALIBRATION) / READ_VCC_DIVIDER;
+    return (inputVoltageADC > VOLTAGE_ADC_CUTOFF) ? vcc : 0;
 }

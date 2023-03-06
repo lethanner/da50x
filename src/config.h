@@ -4,7 +4,7 @@
 /* Пользовательские настройки */
 //#define RUSSIAN
 #define CTRL_HOLD_TIMEOUT_MS 500
-#define ACT_AUTOCLOSE_TIMEOUT_MS 1000
+#define ACT_AUTOCLOSE_TIMEOUT_MS 1500
 #define BT_AUTOCONNECT_TIMEOUT_MS 11500
 #define DISP_AUTO_DIMM_TIMEOUT_MS 15000
 #define TEMP_REFRESH_INTERVAL_MS 2000
@@ -18,6 +18,12 @@
 #define SSD1306_DISP_I2C 0x3C
 // таймауты ожидания ответа от модуля
 #define CHIP_REPLY_TIMEOUT_MS 3000
+// всякое для напряжения питания
+#define READ_VCC_DIVIDER 6
+#define READ_VCC_CALIBRATION 107
+#define VOLTAGE_ADC_CUTOFF 64
+#define MIN_VOLTAGE_ADC
+#define MIN_5V_RAIL_ADC
 
 // настройки подогнаны под аппаратные требования, НЕОБДУМАННОЕ ИЗМЕНЕНИЕ ЗАПРЕЩЕНО!
 #define I2C_SPEED_HZ 400000L

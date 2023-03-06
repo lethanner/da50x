@@ -43,11 +43,11 @@ void setup()
 
   /* инициализация АЦП для измерений */
   // АЦП вкл, ручной режим, прерывания откл, скорость преобразования минимальная (F_CPU / 128, 9.6 кГц)
-  //ADCSRA = 0b10000111;
-  // внутренний reference, стандартный байтовый порядок, канал A6
-  //ADMUX = 0b11000110;
+  ADCSRA = 0b10000111;
+  // стандартный reference, стандартный байтовый порядок, канал A6
+  ADMUX = 0b01000110;
   // ну тут опять заранее запрашиваем данные, как и с датчиком температуры...
-  //bitSet(ADCSRA, ADSC);
+  bitSet(ADCSRA, ADSC);
 
   /* инициализация модуля bluetooth */
   bt_uart_initialize();
@@ -57,20 +57,20 @@ void setup()
   /* инициализация микшерного блока */
   setMasterVolumeClassic(INIT_VOLUME);
 
-  /* автовыбор доступного источника + настройка прерываний для автопереключения */
-  DDRB &= ~0x01;
-  if (checkInputAvailability(SRC_USB))
-    changeAudioInput(SRC_USB);
-  // PCMSK0 = 0x01;
-  // PCICR |= 0x01;
-
   /* инициализация порта и прерывания для энкодера */
   DDRC &= ~0b00000111;
   PCMSK1 |= 0b00000101;
   PCICR |= (1 << 1);
 
   /* включение усилителя */
-  setAmplifier(true);
+  //setAmplifier(true);
+
+  /* автовыбор доступного источника + настройка прерываний для автопереключения */
+  DDRB &= ~0x01;
+  if (checkInputAvailability(SRC_USB))
+    changeAudioInput(SRC_USB);
+  // PCMSK0 = 0x01;
+  // PCICR |= 0x01;
 
   /* включение индикатора мониторинга */
   setMonitoring(true);

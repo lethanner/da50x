@@ -12,6 +12,8 @@
 #define SCREEN_MENU 2
 #define SCREEN_MENU_ACT 3
 
+#define ACTION_DEBUG 0
+
 // выводы сдвигового регистра
 #define EXT_BT_ENABLE 7
 #define EXT_USB_ENABLE 6

@@ -23,8 +23,10 @@ extern void (*_handler)(byte);
 // extern uint8_t ctrl_state;
 // extern uint32_t hold_timer;
 extern uint32_t blinkTimer;
+extern uint32_t actionRefreshTimer;
+extern uint16_t actionRefreshRate;
 
-extern byte screenId;
+extern byte screenId, actionId;
 
 extern volatile unsigned long timer0_millis;
 
@@ -52,7 +54,9 @@ void ui_printPGMLine(uint16_t ptr);
 void clearMainArea();
 void menuRotate(bool dir);
 
+void drawTitle(const __FlashStringHelper *title, uint8_t offset);
 void createMenu(const char *const *entries, byte entryCount, void (*handler)(byte), const __FlashStringHelper *title = NULL, byte tt_x = 0, bool handlerAutoCall = false, int *menuBooleans = NULL);
+void initializeMenuAction(const __FlashStringHelper *title, byte tt_x, byte actId, uint16_t refreshRate_ms = 0);
 void drawBar(byte val, byte max, byte startX, byte startY);
 void drawBTLogo(bool large = false);
 

@@ -3,6 +3,7 @@
 
 #define ALLOW_AUTOSWITCH 0
 #define ENABLE_MONITORING 1
+#define DAC_ONLY_MODE 2
 
 #include <Arduino.h>
 #include <microWire.h>
@@ -18,7 +19,7 @@ extern byte curInput;
 extern int8_t hsTemp;
 extern byte statusRefresh;
 extern bool ampEnabled;
-extern uint16_t inputVoltage, outLevel;
+extern uint16_t inputVoltageADC;
 extern MicroDS18B20 heatsink;
 extern int deviceSettings;
 
@@ -30,5 +31,7 @@ bool checkInputAvailability(byte src_id);
 void changeAudioInput(byte src_id);
 void setAmplifier(bool state);
 void setMonitoring(bool state);
+void toggleDACOnlyMode();
+uint16_t readDeviceVcc();
 
 #endif

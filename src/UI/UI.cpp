@@ -72,6 +72,17 @@ void _hSettings(byte id)
     case 2: // LPF
         // TODO...
         break;
+    case 3: // DAC-only
+        toggleDACOnlyMode();
+        break;
+    case 4: // Debug
+        initializeMenuAction(F("Debug"), 49, ACTION_DEBUG, 500);
+        screen.setCursor(0, 1);
+        screen.print(F("VOLTAGE ADC:"));
+
+        screen.setCursor(0, 2);
+        screen.print(F("MILLIVOLTS:"));
+        break;
     }
 }
 
@@ -86,7 +97,7 @@ bool _hThreeEntries(byte id)
         createMenu(menu_sources, 3, _hSource, F(SOURCE), SOURCE_OFFSET);
         break;
     case 1: // settings
-        createMenu(settings_menu, 3, _hSettings, F(SETTINGS), SETTINGS_OFFSET, false, &deviceSettings);
+        createMenu(settings_menu, 5, _hSettings, F(SETTINGS), SETTINGS_OFFSET, false, &deviceSettings);
         break;
     case 2: // shutdown
         // TODO
@@ -135,10 +146,18 @@ void ui_redraw(bool hard)
         screen.setCursor(0, 0);
 
         ui_printPGMLine(pgm_read_word(&(sb_sources[curInput])));
-        screen.setCursor(91, 0);
-        screen.print(F("%"));
-        screen.setCursor(115, 0);
-        screen.print(F("'C"));
+        
+        if (bitRead(deviceSettings, DAC_ONLY_MODE)) {
+            screen.setCursor(DAC_ONLY_MARKER_OFFSET, 0);
+            screen.print(F(DAC_ONLY_MARKER));
+        }
+        else
+        {
+            screen.setCursor(91, 0);
+            screen.print(F("%"));
+            screen.setCursor(115, 0);
+            screen.print(F("'C"));
+        }
 
         setStatusbarIcon();
         reactivateDisplay();
@@ -194,14 +213,25 @@ void ui_tick()
         {
         case SCREEN_MAIN:
             clearMainArea();
-            screen.setCursor(MASTER_VOLUME_OFFSET, 3);
-            screen.print(F(MASTER_VOLUME));
+            if (bitRead(deviceSettings, DAC_ONLY_MODE))
+            {
+                screen.setCursor(DAC_ONLY_VOLUME_REJECT_OFFSET, 3);
+                screen.print(F(DAC_ONLY_VOLUME_REJECT));
+                screen.setCursor(DAC_ONLY_VOLUME_REJECT_2_OFFSET, 4);
+                screen.print(F(DAC_ONLY_VOLUME_REJECT_2));
+            }
+            else {
+                screen.setCursor(MASTER_VOLUME_OFFSET, 3);
+                screen.print(F(MASTER_VOLUME));
+            }
             screenId = SCREEN_ACTION;
             // break;
         case SCREEN_ACTION:
+            actTimer = timer0_millis;
+            if (bitRead(deviceSettings, DAC_ONLY_MODE))
+                break;
             changeVolume(rot_dir);
             drawBar(volMaster, 100, 14, 44);
-            actTimer = timer0_millis;
             break;
         case SCREEN_MENU:
             menuRotate(rot_dir);
@@ -229,6 +259,9 @@ void ui_tick()
             }
             break;
         case SCREEN_MENU:
+            ui_redraw(true);
+            break;
+        case SCREEN_MENU_ACT:
             ui_redraw(true);
             break;
         }
@@ -262,6 +295,25 @@ void ui_tick()
         ui_refresh(false);
     }
 
+    if (screenId == SCREEN_MENU_ACT && actionRefreshRate > 0)
+    {
+        if (timer0_millis - actionRefreshTimer > actionRefreshRate)
+        {
+            switch (actionId)
+            {
+                case ACTION_DEBUG:
+                    screen.setCursor(78, 1);
+                    screen.print(inputVoltageADC);
+
+                    screen.setCursor(72, 2);
+                    screen.print(readDeviceVcc());
+                    reactivateDisplay();
+                    break;
+            }
+            actionRefreshTimer = timer0_millis;
+        }
+    }
+
     dimmDisplay();
 }
 
@@ -275,24 +327,26 @@ void ui_refresh(bool fullRefresh)
     setStatusbarIcon(1, ampEnabled);
 
     // значение громкости
-    screen.setCursor(73, 0);
-    if (volMaster < 100)
-        screen.print(' ');
-    if (volMaster < 10)
-        screen.print(' ');
-    screen.print(volMaster);
-
-    // значение температуры
-    screen.setCursor(103, 0);
-    if (temperatureBlink == 1)
-        screen.print("  ");
-    else
-    {
-        if (hsTemp < 10 && hsTemp > -1)
+    if (!bitRead(deviceSettings, DAC_ONLY_MODE)) {
+        screen.setCursor(73, 0);
+        if (volMaster < 100)
             screen.print(' ');
-        screen.print(hsTemp > 99 ? 99 : hsTemp);
-    }
+        if (volMaster < 10)
+            screen.print(' ');
+        screen.print(volMaster);
 
+        // значение температуры
+        screen.setCursor(103, 0);
+        if (temperatureBlink == 1)
+            screen.print("  ");
+        else
+        {
+            if (hsTemp < 10 && hsTemp > -1)
+                screen.print(' ');
+            screen.print(hsTemp > 99 ? 99 : hsTemp);
+        }
+    }
+    
     /* Обновление основной части экрана, если надо */
     if (fullRefresh && screenId > SCREEN_MAIN)
         return;
