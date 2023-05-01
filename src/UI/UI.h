@@ -70,5 +70,6 @@ void reactivateDisplay();
 void dimmDisplay();
 
 void setIndicator(bool state);
+//void setIndicator(bool state, uint16_t onInterval = 0, uint8_t blinkTimes = 0, uint16_t offInterval = 0, uint16_t repeatInterval = 0, uint8_t _override = 0);
 
 #endif

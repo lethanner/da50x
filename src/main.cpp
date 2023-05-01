@@ -21,6 +21,8 @@ void setup()
   if (!disp_initialize())
   {
     while(1) {
+      // Выбросить и никогда не использовать.
+      // Немедленно заменить одной строкой после того, как будет доделана вся функция setIndicator.
       setIndicator(true);
       delay(250);
       setIndicator(false);

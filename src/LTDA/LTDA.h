@@ -4,6 +4,7 @@
 #define ALLOW_AUTOSWITCH 0
 #define ENABLE_MONITORING 1
 #define DAC_ONLY_MODE 2
+#define ALLOW_QUICK_VOLUME 3
 
 #include <Arduino.h>
 #include <microWire.h>
@@ -26,7 +27,7 @@ extern int deviceSettings;
 void hardware_tick();
 void setMasterVolume(byte val);
 void setMasterVolumeClassic(byte vol);
-void changeVolume(bool dir);
+void changeVolume(bool dir, bool quick = false);
 bool checkInputAvailability(byte src_id);
 void changeAudioInput(byte src_id);
 void setAmplifier(bool state);

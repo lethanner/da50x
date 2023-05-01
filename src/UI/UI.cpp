@@ -7,6 +7,8 @@ uint32_t hold_timer;
 
 uint32_t actTimer;
 
+uint32_t lastVolumeChangeTimer;
+
 uint8_t temperatureBlink = 0;
 
 // прерывание PORT CHANGE для ручки управления
@@ -75,7 +77,10 @@ void _hSettings(byte id)
     case 3: // DAC-only
         toggleDACOnlyMode();
         break;
-    case 4: // Debug
+    case 4:
+        bitWrite(deviceSettings, ALLOW_QUICK_VOLUME, !bitRead(deviceSettings, ALLOW_QUICK_VOLUME));
+        break;
+    case 5: // Debug
         initializeMenuAction(F("Debug"), 49, ACTION_DEBUG, 500);
         screen.setCursor(0, 1);
         screen.print(F("VOLTAGE ADC:"));
@@ -230,8 +235,9 @@ void ui_tick()
             actTimer = timer0_millis;
             if (bitRead(deviceSettings, DAC_ONLY_MODE))
                 break;
-            changeVolume(rot_dir);
+            changeVolume(rot_dir, (bitRead(deviceSettings, ALLOW_QUICK_VOLUME) && (timer0_millis - lastVolumeChangeTimer < QUICK_VOLUME_ACTIVATE_MS)));
             drawBar(volMaster, 100, 14, 44);
+            lastVolumeChangeTimer = timer0_millis;
             break;
         case SCREEN_MENU:
             menuRotate(rot_dir);

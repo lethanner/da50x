@@ -6,7 +6,7 @@ byte statusRefresh;
 bool ampEnabled;
 int8_t hsTemp, _hsTemp;
 uint16_t inputVoltageADC;
-int deviceSettings = 1;
+int deviceSettings = 0b00001001; // defaults так сказать
 
 MicroDS18B20 heatsink(A3);
 uint32_t hsRefreshTimer;
@@ -28,6 +28,12 @@ void setMasterVolume(byte val)
         terminate(1);
 }
 
+/* 
+ * А может ну его нафиг, этот режим точной подстройки громкости?
+ * Он вообще пригодится когда-нибудь?
+ * Может, пора бы уже убрать эти хвосты бесполезного кода под него?
+*/
+
 // установка значения громкости мастер-канала в пределах 0-100%
 void setMasterVolumeClassic(byte vol)
 {
@@ -36,15 +42,23 @@ void setMasterVolumeClassic(byte vol)
     setMasterVolume(vol);
 }
 
-void changeVolume(bool dir)
+void changeVolume(bool dir, bool quick)
 {
-    uint8_t newVol;
-    if (!dir && volMaster > 0)
-        newVol = volMaster - 1;
-    if (dir && volMaster < 100)
-        newVol = volMaster + 1;
-
-    setMasterVolumeClassic(newVol);
+    int8_t newVol;
+    if (!dir)
+    {
+        newVol = (quick) ? (volMaster - 5) : (volMaster - 1);
+        if (newVol < 0)
+            newVol = 0;
+    }
+    else
+    {
+        newVol = (quick) ? (volMaster + 5) : (volMaster + 1);
+        if (newVol > 100)
+            newVol = 100;
+    }
+    
+    setMasterVolumeClassic((uint8_t)newVol);
 }
 
 // управление питанием усилителя

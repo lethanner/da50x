@@ -128,7 +128,7 @@ void drawBTLogo(bool large)
  * @param entryCount Количество строк меню.
  * @param handler Функция, принимающая аргумент типа byte, которая будет вызвана при
  *      выборе пункта меню пользователем. В аргумент передаётся номер выбранного пункта.
- * @param title Заголовок меню с F-макро (FlashStringHelper).
+ * @param title Заголовок меню под F-макро (FlashStringHelper).
  * @param tt_x Смещение заголовка от левого края дисплея в пикселях (обычно используется
  *      для его размещения посередине, а вообще это какой-то костыль).
  * @param handlerAutoCall Автоматически вызывать handler при каждом перемещении по пунктам
@@ -252,10 +252,12 @@ void dimmDisplay()
  * @param blinkTimes Количество вспышек светодиода (0 - бесконечно)
  * @param offInterval Интервал (в мс), в течение которого светодиод будет выключен (при мигании)
  * @param repeatInterval Интервал (в мс), через который вспышки будут повторяться (0 - не повторять)
- * @param override Приоритет мигания светодиода для заданного сценария
+ * @param _override Приоритет мигания светодиода для заданного сценария
  *      (0 - без приоритета, 1 - игнорировать последующие вызовы функции без
  *      override, 2 - приостановить всю программу при выполнении сценария)
 */
+// TODO! TODO!!!
+//void setIndicator(bool state, uint16_t onInterval, uint8_t blinkTimes, uint16_t offInterval, uint16_t repeatInterval, uint8_t _override)
 void setIndicator(bool state)
 {
     extWrite(EXT_INDICATOR, state);
