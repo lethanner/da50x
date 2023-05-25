@@ -5,7 +5,7 @@
  * Работа начата: 27.08.2021
 */
 #include <Arduino.h>
-#include "LTDA/LTDA.h"
+#include "HW/hardware.h"
 #include "UI/UI.h"
 
 // Инициализация устройства

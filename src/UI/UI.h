@@ -7,7 +7,7 @@
 #include "defines.h"
 #include "bitmaps.h"
 #include "localization.h"
-#include "LTDA/LTDA.h"
+#include "HW/hardware.h"
 
 extern GyverOLED<SSD1306_128x64, OLED_NO_BUFFER> screen;
 

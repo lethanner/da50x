@@ -1,4 +1,4 @@
-#include "LTDA.h"
+#include "hardware.h"
 
 byte volMaster;
 byte curInput = 0;
