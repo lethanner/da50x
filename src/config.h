@@ -22,9 +22,10 @@
 // всякое для напряжения питания
 #define READ_VCC_DIVIDER 6
 #define READ_VCC_CALIBRATION 107
-#define VOLTAGE_ADC_CUTOFF 64
-#define MIN_VOLTAGE_ADC
-#define MIN_5V_RAIL_ADC
+#define VOLTAGE_ADC_CUTOFF 70
+#define UNDERVOLTAGE_ADC 897 // что-то около 16 вольт
+#define INSUFF_VOLTAGE_ADC 449 // что-то около 8 вольт
+//#define MIN_5V_RAIL_ADC
 
 // настройки подогнаны под аппаратные требования, НЕОБДУМАННОЕ ИЗМЕНЕНИЕ ЗАПРЕЩЕНО!
 #define I2C_SPEED_HZ 400000L

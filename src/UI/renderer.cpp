@@ -11,10 +11,11 @@ bool _handlerAutoCall;
 int *_menuBooleans;
 int _menuBoolsLast;
 
-byte activeSbIcons;
+byte activeSbIcons = 0x00;
+byte altStatusIcons = 0x00;
 byte screenId = SCREEN_MAIN;
-byte actionId;
 
+byte actionId;
 uint16_t actionRefreshRate;
 uint32_t actionRefreshTimer;
 
@@ -198,12 +199,13 @@ void menuRotate(bool dir)
         callMenuHandler();
 }
 
-void setStatusbarIcon(byte id, bool state)
+void setStatusbarIcon(byte id, bool state, bool alternative)
 {
     if (id > 0)
     {
         screen.clear(30, 0, 70, 6);
-        bitWrite(activeSbIcons, id-1, state);
+        bitWrite(activeSbIcons, id-1, state); // основные флаги
+        bitWrite(altStatusIcons, id-1, alternative); // флаги, использовать ли альтернативную иконку
     }
 
     byte dispStartX = 64;
@@ -211,8 +213,11 @@ void setStatusbarIcon(byte id, bool state)
     {
         if ((activeSbIcons >> i) & 0x01)
         {
-            screen.drawBitmap(dispStartX, 0, statusbar_icons[i], 5, 8);
-            dispStartX -= 7;
+            if ((altStatusIcons >> i) & 0x01)
+                screen.drawBitmap(dispStartX, 0, status_icons_alt[i], 5, 8);
+            else
+                screen.drawBitmap(dispStartX, 0, statusbar_icons[i], 5, 8);
+            dispStartX -= 8;
         }
     }
 }

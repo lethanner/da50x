@@ -57,7 +57,7 @@ void setup()
   bt_disable();
 
   /* инициализация микшерного блока */
-  setMasterVolumeClassic(INIT_VOLUME);
+  setMasterVolume(INIT_VOLUME);
 
   /* инициализация порта и прерывания для энкодера */
   DDRC &= ~0b00000111;
@@ -65,9 +65,9 @@ void setup()
   PCICR |= (1 << 1);
 
   /* включение усилителя */
-  //setAmplifier(true);
+  // не надо, этот вопрос решает функция changeAudioInput ниже
 
-  /* автовыбор доступного источника + настройка прерываний для автопереключения */
+  /* настройка порта обнаружения подключения USB + его автовключение */
   DDRB &= ~0x01;
   if (checkInputAvailability(SRC_USB))
     changeAudioInput(SRC_USB);
@@ -82,12 +82,11 @@ void setup()
   setIndicator(false);
 }
 
-uint32_t debugTimer;
 // Главный цикл программы
 void loop()
 {
-  ui_tick();
   hardware_tick();
+  ui_tick();
 
   if (statusRefresh == 1) // онли статусбар
     ui_refresh(false);
@@ -97,12 +96,4 @@ void loop()
     ui_redraw(true);
   // TODO: remote refresh
   statusRefresh = 0;
-  
-  // if (timer0_millis - debugTimer > 500)
-  // {
-  //   Serial.println(inputVoltage);
-  //   Serial.println(outLevel);
-  //   Serial.println();
-  //   debugTimer = timer0_millis;
-  // }
 }

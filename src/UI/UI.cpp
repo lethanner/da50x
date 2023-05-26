@@ -6,9 +6,7 @@ uint8_t ctrl_state;
 uint32_t hold_timer;
 
 uint32_t actTimer;
-
 uint32_t lastVolumeChangeTimer;
-
 uint8_t temperatureBlink = 0;
 
 // прерывание PORT CHANGE для ручки управления
@@ -38,7 +36,7 @@ void _hSource(byte id)
     if (!checkInputAvailability(id))
         return;
 
-    if (id == curInput)
+    if (id == currentInput)
     {
         ui_redraw(true);
         return;
@@ -75,7 +73,7 @@ void _hSettings(byte id)
         // TODO...
         break;
     case 3: // DAC-only
-        toggleDACOnlyMode();
+        setDACOnlyMode(!(bitRead(deviceSettings, DAC_ONLY_MODE)));
         break;
     case 4:
         bitWrite(deviceSettings, ALLOW_QUICK_VOLUME, !bitRead(deviceSettings, ALLOW_QUICK_VOLUME));
@@ -102,7 +100,7 @@ bool _hThreeEntries(byte id)
         createMenu(menu_sources, 3, _hSource, F(SOURCE), SOURCE_OFFSET);
         break;
     case 1: // settings
-        createMenu(settings_menu, 5, _hSettings, F(SETTINGS), SETTINGS_OFFSET, false, &deviceSettings);
+        createMenu(settings_menu, 6, _hSettings, F(SETTINGS), SETTINGS_OFFSET, false, &deviceSettings);
         break;
     case 2: // shutdown
         // TODO
@@ -150,19 +148,12 @@ void ui_redraw(bool hard)
         screen.clear(0, 0, 127, 7);
         screen.setCursor(0, 0);
 
-        ui_printPGMLine(pgm_read_word(&(sb_sources[curInput])));
+        ui_printPGMLine(pgm_read_word(&(sb_sources[currentInput])));
         
-        if (bitRead(deviceSettings, DAC_ONLY_MODE)) {
-            screen.setCursor(DAC_ONLY_MARKER_OFFSET, 0);
-            screen.print(F(DAC_ONLY_MARKER));
-        }
-        else
-        {
-            screen.setCursor(91, 0);
-            screen.print(F("%"));
-            screen.setCursor(115, 0);
-            screen.print(F("'C"));
-        }
+        screen.setCursor(91, 0);
+        screen.print(F("%"));
+        screen.setCursor(115, 0);
+        screen.print(F("'C"));
 
         setStatusbarIcon();
         reactivateDisplay();
@@ -170,7 +161,7 @@ void ui_redraw(bool hard)
 
     /* Отрисовка статичной информации дисплея */
     clearMainArea();
-    switch (curInput)
+    switch (currentInput)
     {
     case SRC_NULL:
         screen.setCursor(NOTHING_OFFSET, 2);
@@ -197,7 +188,7 @@ void ui_tick()
         switch (screenId)
         {
         case SCREEN_MAIN:
-            switch (curInput)
+            switch (currentInput)
             {
             case SRC_BT:
                 if (bt_conn_count > 1)
@@ -236,7 +227,7 @@ void ui_tick()
             if (bitRead(deviceSettings, DAC_ONLY_MODE))
                 break;
             changeVolume(rot_dir, (bitRead(deviceSettings, ALLOW_QUICK_VOLUME) && (timer0_millis - lastVolumeChangeTimer < QUICK_VOLUME_ACTIVATE_MS)));
-            drawBar(volMaster, 100, 14, 44);
+            drawBar(currentMasterVolume, 100, 14, 44);
             lastVolumeChangeTimer = timer0_millis;
             break;
         case SCREEN_MENU:
@@ -251,7 +242,7 @@ void ui_tick()
         switch (screenId)
         {
         case SCREEN_MAIN:
-            switch (curInput)
+            switch (currentInput)
             {
             case SRC_NULL:
                 createMenu(null_src_menu, 3, _hTEOnly, F(DEVICE_MENU), DEVICE_MENU_OFFSET);
@@ -310,9 +301,11 @@ void ui_tick()
                 case ACTION_DEBUG:
                     screen.setCursor(78, 1);
                     screen.print(inputVoltageADC);
-
                     screen.setCursor(72, 2);
                     screen.print(readDeviceVcc());
+                    screen.setCursor(0, 3);
+                    screen.print(undervoltage);
+                    
                     reactivateDisplay();
                     break;
             }
@@ -330,16 +323,17 @@ void ui_refresh(bool fullRefresh)
 
     /* Обновление статусной строки */
     // ЗНАЧКИ!
-    setStatusbarIcon(1, ampEnabled);
+    setStatusbarIcon(1, ampEnabled, (bool)undervoltage);
+    setStatusbarIcon(2, checkInputAvailability(SRC_USB));
 
     // значение громкости
     if (!bitRead(deviceSettings, DAC_ONLY_MODE)) {
         screen.setCursor(73, 0);
-        if (volMaster < 100)
+        if (currentMasterVolume < 100)
             screen.print(' ');
-        if (volMaster < 10)
+        if (currentMasterVolume < 10)
             screen.print(' ');
-        screen.print(volMaster);
+        screen.print(currentMasterVolume);
 
         // значение температуры
         screen.setCursor(103, 0);
@@ -352,12 +346,17 @@ void ui_refresh(bool fullRefresh)
             screen.print(hsTemp > 99 ? 99 : hsTemp);
         }
     }
+    else
+    {
+        screen.setCursor(DAC_ONLY_MARKER_OFFSET, 0);
+        screen.print(F(DAC_ONLY_MARKER));
+    }
     
     /* Обновление основной части экрана, если надо */
-    if (fullRefresh && screenId > SCREEN_MAIN)
+    if (!fullRefresh || screenId > SCREEN_MAIN)
         return;
 
-    switch (curInput)
+    switch (currentInput)
     {
     /* Информация о Bluetooth-соединении */
     case SRC_BT:

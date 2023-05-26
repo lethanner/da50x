@@ -1,8 +1,10 @@
 #include "hardware.h"
 
-byte volMaster;
-byte curInput = 0;
+byte currentMasterVolume;
+byte currentInput = 0;
 byte statusRefresh;
+byte undervoltage = 0;
+bool dacOnlyEnabledEarly;
 bool ampEnabled;
 int8_t hsTemp, _hsTemp;
 uint16_t inputVoltageADC;
@@ -15,31 +17,27 @@ extern volatile unsigned long timer0_millis;
 uint32_t srcCheckTimer;
 byte srcStateCache;
 
-/* Микшер */
-// установка значения громкости мастер-канала в пределах 0-255
-void setMasterVolume(byte val)
-{
-    Wire.beginTransmission(DIGIPOT_MASTER_I2C);
-    Wire.write(0b10101111); // команда на запись обеих потенциометров
-    Wire.write(val);
-
-    statusRefresh = 2;
-    if (Wire.endTransmission() != 0)
-        terminate(1);
-}
-
 /* 
  * А может ну его нафиг, этот режим точной подстройки громкости?
  * Он вообще пригодится когда-нибудь?
  * Может, пора бы уже убрать эти хвосты бесполезного кода под него?
+ * 
+ * UPD 25.05.2023 - убрал.
 */
 
 // установка значения громкости мастер-канала в пределах 0-100%
-void setMasterVolumeClassic(byte vol)
+void setMasterVolume(byte vol)
 {
-    volMaster = vol;
+    currentMasterVolume = vol;
     vol = map(vol, 0, 100, 0, 255);
-    setMasterVolume(vol);
+    
+    Wire.beginTransmission(DIGIPOT_MASTER_I2C);
+    Wire.write(0b10101111); // команда на запись обеих потенциометров
+    Wire.write(vol);
+
+    statusRefresh = 2;
+    if (Wire.endTransmission() != 0)
+        terminate(1);
 }
 
 void changeVolume(bool dir, bool quick)
@@ -47,18 +45,18 @@ void changeVolume(bool dir, bool quick)
     int8_t newVol;
     if (!dir)
     {
-        newVol = (quick) ? (volMaster - 5) : (volMaster - 1);
+        newVol = (quick) ? (currentMasterVolume - 5) : (currentMasterVolume - 1);
         if (newVol < 0)
             newVol = 0;
     }
     else
     {
-        newVol = (quick) ? (volMaster + 5) : (volMaster + 1);
+        newVol = (quick) ? (currentMasterVolume + 5) : (currentMasterVolume + 1);
         if (newVol > 100)
             newVol = 100;
     }
     
-    setMasterVolumeClassic((uint8_t)newVol);
+    setMasterVolume((uint8_t)newVol);
 }
 
 // управление питанием усилителя
@@ -102,7 +100,7 @@ bool checkInputAvailability(byte src_id)
 void changeAudioInput(byte src_id)
 {
     // выключение предыдущего источника
-    switch (curInput)
+    switch (currentInput)
     {
     case SRC_USB:
         extWrite(EXT_USB_ENABLE, false);
@@ -115,7 +113,6 @@ void changeAudioInput(byte src_id)
     // включение запрошенного источника
     switch (src_id)
     {
-    
     case SRC_USB:
         extWrite(EXT_USB_ENABLE, true);
         break;
@@ -130,7 +127,7 @@ void changeAudioInput(byte src_id)
     else
         setAmplifier(true);
 
-    curInput = src_id;
+    currentInput = src_id;
     statusRefresh = 3;
 }
 
@@ -149,21 +146,6 @@ void hardware_tick()
     }
 
     /* Обновление данных с АЦП, если преобразование окончено */
-    // if (bit_is_clear(ADCSRA, ADSC))
-    // {
-    //     uint16_t adcData = ADC;
-    //     if (ADMUX & 0x01) // канал A6 (напряжение)
-    //     {
-    //         outLevel = adcData;
-    //         ADMUX = 0b01000111; // переключаемся на A7
-    //     }
-    //     else // канал А7 (аудио)
-    //     {
-    //         inputVoltage = adcData * 18;
-    //         ADMUX = 0b01000110; // переключаемся на A6
-    //     }
-    //     bitSet(ADCSRA, ADSC);
-    // }
     if (bit_is_clear(ADCSRA, ADSC))
     {
         inputVoltageADC = ADC;
@@ -171,22 +153,56 @@ void hardware_tick()
     }
 
     /* Обновление данных с Bluetooth, если это необходимо */
-    if (curInput == SRC_BT)
+    if (currentInput == SRC_BT)
         bt_update();
 
     /* Проверка состояний источников для автопереключения */
+    // источникОВ, ага. Тут в автосвитч умеет только USB. Так же, как и checkInputAvailability проверяет только USB.
+    // А флешки и карты памяти вряд ли вообще нужны в этом девайсе. Там, может, AUX появится, и вот он уже нужен.
     if (timer0_millis - srcCheckTimer > 500)
     {
         bool usb_state = PINB & 0x01;
         if (usb_state != bitRead(srcStateCache, 0))
         {
+            statusRefresh = 1;
             if (usb_state && bitRead(deviceSettings, ALLOW_AUTOSWITCH))
                 changeAudioInput(SRC_USB);
-            else if (!usb_state && curInput == SRC_USB)
+            else if (!usb_state && currentInput == SRC_USB)
                 changeAudioInput(SRC_NULL);
             bitWrite(srcStateCache, 0, usb_state);
         }
         srcCheckTimer = timer0_millis;
+    }
+
+    /* Флаг о заниженном напряжении питания + автопереход в DAC-only mode при его отсутствии */
+    // чёт какой-то некрасивый код получается
+    if (inputVoltageADC > INSUFF_VOLTAGE_ADC)
+    {
+        if (undervoltage == 2)
+        {
+            undervoltage = 0;
+            setDACOnlyMode(dacOnlyEnabledEarly);
+        }
+        if (inputVoltageADC < UNDERVOLTAGE_ADC)
+        {
+            if (undervoltage != 1)
+            {
+                undervoltage = 1;
+                if (statusRefresh != 3)
+                    statusRefresh = 1;
+            }
+        }
+        else if (undervoltage != 0)
+        {
+            undervoltage = 0;
+            statusRefresh = 1;
+        }
+    }
+    else if (undervoltage != 2)
+    {
+        dacOnlyEnabledEarly = bitRead(deviceSettings, DAC_ONLY_MODE);
+        setDACOnlyMode();
+        undervoltage = 2;
     }
 }
 
@@ -196,21 +212,23 @@ void setMonitoring(bool state)
     bitWrite(deviceSettings, ENABLE_MONITORING, state);
 }
 
-void toggleDACOnlyMode() {
-    bool oldState = bitRead(deviceSettings, DAC_ONLY_MODE);
-    bitWrite(deviceSettings, DAC_ONLY_MODE, !oldState);
-    if (oldState)
+void setDACOnlyMode(bool state) {
+    if (state == bitRead(deviceSettings, DAC_ONLY_MODE) || (undervoltage == 2 && !state))
+        return;
+
+    bitWrite(deviceSettings, DAC_ONLY_MODE, state);
+    if (!state)
     {
-        if (curInput != SRC_NULL)
+        if (currentInput != SRC_NULL)
             setAmplifier(true);
-        setMasterVolumeClassic(INIT_VOLUME);
+        setMasterVolume(INIT_VOLUME);
     }
     else
     {
         setAmplifier(false);
         setMasterVolume(0);
     }
-    statusRefresh = 1;
+    statusRefresh = 3;
 }
 
 uint16_t readDeviceVcc()

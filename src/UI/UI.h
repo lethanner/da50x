@@ -60,7 +60,7 @@ void initializeMenuAction(const __FlashStringHelper *title, byte tt_x, byte actI
 void drawBar(byte val, byte max, byte startX, byte startY);
 void drawBTLogo(bool large = false);
 
-void setStatusbarIcon(byte id = 0, bool state = true);
+void setStatusbarIcon(byte id = 0, bool state = true, bool alternative = false);
 
 void ctrl_update();
 

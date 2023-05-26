@@ -15,24 +15,25 @@
 #include "bluetooth.h"
 #include "errorHandler.h"
 
-extern byte volMaster;
-extern byte curInput;
+extern byte currentMasterVolume;
+extern byte currentInput;
 extern int8_t hsTemp;
 extern byte statusRefresh;
 extern bool ampEnabled;
 extern uint16_t inputVoltageADC;
 extern MicroDS18B20 heatsink;
 extern int deviceSettings;
+extern byte undervoltage;
 
 void hardware_tick();
 void setMasterVolume(byte val);
-void setMasterVolumeClassic(byte vol);
+void setMasterVolume(byte vol);
 void changeVolume(bool dir, bool quick = false);
 bool checkInputAvailability(byte src_id);
 void changeAudioInput(byte src_id);
 void setAmplifier(bool state);
 void setMonitoring(bool state);
-void toggleDACOnlyMode();
+void setDACOnlyMode(bool state = true);
 uint16_t readDeviceVcc();
 
 #endif

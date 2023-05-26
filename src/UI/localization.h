@@ -7,19 +7,7 @@
 #include <Arduino.h> // из-за PROGMEM, чтобы intellisense не ругался
 #include "config.h"
 
-// const char i0[] PROGMEM = "Баланс";
-// const char i1[] PROGMEM = "Огр. мощности";
-// const char i2[] PROGMEM = "?AСинхр. регулировка";
-// const char i3[] PROGMEM = "?BАвтопереключение";
-// const char i4[] PROGMEM = "ФНЧ";
-// const char i5[] PROGMEM = "Яркость дисп.";
-// const char i6[] PROGMEM = "Режим индикатора";
-// const char i7[] PROGMEM = "?CЭнергосбережение";
-// const char i8[] PROGMEM = "Сброс";
-
-// const char *const names[] PROGMEM = {i0, i1, i2, i3, i4, i5, i6, i7, i8};
-
-// Я пришёл русский язык учить (С) Russia Paver
+// Русский язык
 #ifdef RUSSIAN
 
 #define TT_ERROR "Произошла ошибка.\r\nКод: "
@@ -31,9 +19,9 @@
 
 const char fsrc0[] PROGMEM = "Без входа";
 const char fsrc1[] PROGMEM = "USB ЦАП";
-const char fsrc3[] PROGMEM = "FM-радио";
-const char fsrc4[] PROGMEM = "Карта памяти";
-const char fsrc5[] PROGMEM = "USB-накопитель";
+//const char fsrc3[] PROGMEM = "FM-радио";
+//const char fsrc4[] PROGMEM = "Карта памяти";
+//const char fsrc5[] PROGMEM = "USB-накопитель";
 
 #define SOURCE "Источник"
 
@@ -82,7 +70,7 @@ const char settings_m5[] PROGMEM = "?DБыстрая регулировка";
 #define DAC_ONLY_VOLUME_REJECT_OFFSET 34
 #define DAC_ONLY_VOLUME_REJECT_2_OFFSET 25
 
-#define ALL_F____D_UP "Напряжение линии\n5В недостаточно\nдля работы DA50X.\n\nТребуется замена\nисточника питания"
+//#define ALL_F____D_UP "Напряжение линии\r\n5В недостаточно\r\nдля работы DA50X.\r\n\nТребуется замена\r\nисточника питания"
 
 #else // Английский язык
 
@@ -97,9 +85,9 @@ const char settings_m5[] PROGMEM = "?DБыстрая регулировка";
 #define SOURCE_OFFSET 46
 const char fsrc0[] PROGMEM = "No input";
 const char fsrc1[] PROGMEM = "USB DAC";
-const char fsrc3[] PROGMEM = "FM radio";
-const char fsrc4[] PROGMEM = "TF card";
-const char fsrc5[] PROGMEM = "USB flash";
+//const char fsrc3[] PROGMEM = "FM radio";
+//const char fsrc4[] PROGMEM = "TF card";
+//const char fsrc5[] PROGMEM = "USB flash";
 
 #define WAIT "Please wait"
 #define WAIT_OFFSET 31
@@ -154,23 +142,24 @@ const char fsrc2[] PROGMEM = "Bluetooth";
 #define DAC_ONLY_VOLUME_REJECT_OFFSET 25
 #define DAC_ONLY_VOLUME_REJECT_2_OFFSET 25
 
-#define ALL_F____D_UP "Insufficient 5V\nrail voltage has\nbeen detected.\nDA50X functions\ncan not be used.\n\nREPLACE POWER SUPPLY"
+//#define ALL_F____D_UP "Insufficient 5V\r\nrail voltage has\r\nbeen detected.\r\nDA50X functions\r\ncan not be used.\r\n\nREPLACE POWER SUPPLY"
 
+// Микросдшка и юсб флешка вообще нужны на этом аппарате? Ладно радио, но вот, боюсь, музычка через DFPlayer будет полным извращением.
 const char src0[] PROGMEM = "null";
 const char src1[] PROGMEM = "USB";
 const char src2[] PROGMEM = "BT";
-const char src3[] PROGMEM = "FM";
-const char src4[] PROGMEM = "TF";
-const char src5[] PROGMEM = "UDISK";
+//const char src3[] PROGMEM = "FM";
+//const char src4[] PROGMEM = "TF";
+//const char src5[] PROGMEM = "UDISK";
 
 const char splitter[] PROGMEM = "--";
 
 const char *const sb_sources[] PROGMEM = {
-    src0, src1, src2, src3, src4, src5
+    src0, src1, src2//, src3, src4, src5
 };
 
 const char *const menu_sources[] PROGMEM = {
-    fsrc0, fsrc1, fsrc2, fsrc3, fsrc4, fsrc5
+    fsrc0, fsrc1, fsrc2//, fsrc3, fsrc4, fsrc5
 };
 
 const char *const bt_menu_entr[] PROGMEM = {
