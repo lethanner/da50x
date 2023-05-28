@@ -57,7 +57,7 @@ void menuRotate(bool dir);
 void drawTitle(const __FlashStringHelper *title, uint8_t offset);
 void createMenu(const char *const *entries, byte entryCount, void (*handler)(byte), const __FlashStringHelper *title = NULL, byte tt_x = 0, bool handlerAutoCall = false, int *menuBooleans = NULL);
 void initializeMenuAction(const __FlashStringHelper *title, byte tt_x, byte actId, uint16_t refreshRate_ms = 0);
-void drawBar(byte val, byte max, byte startX, byte startY);
+void drawBar(int8_t val, byte range, byte startX, byte startY, bool canBeInverted = false);
 void drawBTLogo(bool large = false);
 
 void setStatusbarIcon(byte id = 0, bool state = true, bool alternative = false);

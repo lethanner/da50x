@@ -13,6 +13,7 @@
 #define SCREEN_MENU_ACT 3
 
 #define ACTION_DEBUG 0
+#define ACTION_BALANCE 1
 
 // выводы сдвигового регистра
 #define EXT_BT_ENABLE 7

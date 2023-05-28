@@ -72,13 +72,17 @@ void _hSettings(byte id)
     case 2: // LPF
         // TODO...
         break;
-    case 3: // DAC-only
+    case 3: // balance
+        initializeMenuAction(F(BALANCE), BALANCE_OFFSET, ACTION_BALANCE);
+        setStereoBalance(balance); // весьма костыльно, это лишь ради срабатывания отрисовки сразу при открытии меню
+        break;
+    case 4: // DAC-only
         setDACOnlyMode(!(bitRead(deviceSettings, DAC_ONLY_MODE)));
         break;
-    case 4:
+    case 5: // quick volume
         bitWrite(deviceSettings, ALLOW_QUICK_VOLUME, !bitRead(deviceSettings, ALLOW_QUICK_VOLUME));
         break;
-    case 5: // Debug
+    case 6: // Debug
         initializeMenuAction(F("Debug"), 49, ACTION_DEBUG, 500);
         screen.setCursor(0, 1);
         screen.print(F("VOLTAGE ADC:"));
@@ -100,7 +104,7 @@ bool _hThreeEntries(byte id)
         createMenu(menu_sources, 3, _hSource, F(SOURCE), SOURCE_OFFSET);
         break;
     case 1: // settings
-        createMenu(settings_menu, 6, _hSettings, F(SETTINGS), SETTINGS_OFFSET, false, &deviceSettings);
+        createMenu(settings_menu, 7, _hSettings, F(SETTINGS), SETTINGS_OFFSET, false, &deviceSettings);
         break;
     case 2: // shutdown
         // TODO
@@ -232,6 +236,15 @@ void ui_tick()
             break;
         case SCREEN_MENU:
             menuRotate(rot_dir);
+            break;
+        case SCREEN_MENU_ACT:
+            switch (actionId)
+            {
+                case ACTION_BALANCE:
+                    setStereoBalance(rot_dir ? balance + 1 : balance - 1);
+                    break;
+            }
+            break;
         }
     }
 
@@ -318,16 +331,33 @@ void ui_tick()
 
 void ui_refresh(bool fullRefresh)
 {
-    if (screenId > SCREEN_ACTION)
+    /* Для перерисовки SCREEN_MENU_ACT по обновлению данных на хардвейре */
+    if (screenId == SCREEN_MENU_ACT)
+    {
+        switch (actionId)
+        {
+            case ACTION_BALANCE:
+                byte x = (balance > 9 || balance < 0) ? 58 : 61; // если 2 или 1 знак в значении, то выравниваем соответствующим образом
+                x = (balance < -9) ? 55 : x; // а это для 3-х знаков, когда появляется минус вместе с двумя знаками
+                screen.setCursor(55, 3);
+                screen.print(F("   ")); // ааааа я вынужден это делать, чтобы остатков символов не было на экране
+                screen.setCursor(x, 3);
+                screen.print(balance);
+                drawBar(balance, 50, 64, 44, true);
+        }
+        return;
+    }
+    else if (screenId == SCREEN_MENU)
         return;
 
+    /* Для SCREEN_ACTION и SCREEN_MAIN */
+
     /* Обновление статусной строки */
-    // ЗНАЧКИ!
     setStatusbarIcon(1, ampEnabled, (bool)undervoltage);
     setStatusbarIcon(2, checkInputAvailability(SRC_USB));
 
-    // значение громкости
     if (!bitRead(deviceSettings, DAC_ONLY_MODE)) {
+        // значение громкости
         screen.setCursor(73, 0);
         if (currentMasterVolume < 100)
             screen.print(' ');
@@ -353,6 +383,9 @@ void ui_refresh(bool fullRefresh)
     }
     
     /* Обновление основной части экрана, если надо */
+    // пхах, коммент при прошлом коммите забыл.
+    // здесь была грубейшая ошибка, которую я заметил только в самом коде, а не при использовании
+    // аппарата. Это условие выполнялось с точностью, да наоборот.
     if (!fullRefresh || screenId > SCREEN_MAIN)
         return;
 

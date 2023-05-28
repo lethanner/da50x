@@ -93,13 +93,30 @@ void clearMainArea()
     screen.clear(0, 8, 127, 63);
 }
 
-void drawBar(byte val, byte max, byte startX, byte startY)
+void drawBar(int8_t val, byte range, byte startX, byte startY, bool canBeInverted)
 {
-    //screen.rect(startX, startY, startX + max + 1, startY + 5, OLED_STROKE);
     if (val > 0)
+    {
         screen.rect(startX, startY, startX + val, startY + 5, OLED_FILL);
-    if (val < max)
-        screen.clear(startX + val, startY, startX + max, startY + 5);
+        if (val < range)
+            screen.clear(startX + val, startY, startX + range, startY + 5);
+        if (canBeInverted)
+            screen.clear(startX - range, startY, startX - 1, startY + 5);
+    }
+    else if (val < 0)
+    {
+        screen.rect(startX + val, startY, startX - 1, startY + 5, OLED_FILL);
+        if (val > -range)
+            screen.clear(startX - range, startY, startX + val - 1, startY + 5);
+        if (canBeInverted)
+            screen.clear(startX, startY, startX + range, startY + 5);
+    }
+    else if (val == 0)
+    {
+        screen.clear(startX, startY, startX + range, startY + 5);
+        if (canBeInverted)
+            screen.clear(startX - range, startY, startX - 1, startY + 5);
+    }
 }
 
 void drawBTLogo(bool large)

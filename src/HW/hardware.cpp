@@ -1,10 +1,10 @@
 #include "hardware.h"
 
 byte currentMasterVolume;
+int8_t balance = 0;
 byte currentInput = 0;
 byte statusRefresh;
 byte undervoltage = 0;
-bool dacOnlyEnabledEarly;
 bool ampEnabled;
 int8_t hsTemp, _hsTemp;
 uint16_t inputVoltageADC;
@@ -14,6 +14,7 @@ MicroDS18B20 heatsink(A3);
 uint32_t hsRefreshTimer;
 extern volatile unsigned long timer0_millis;
 
+bool dacOnlyEnabledEarly;
 uint32_t srcCheckTimer;
 byte srcStateCache;
 
@@ -26,18 +27,40 @@ byte srcStateCache;
 */
 
 // установка значения громкости мастер-канала в пределах 0-100%
+/* 
+ * В кой-то веки добавил я этот стереобаланс.
+ * Правда вот громкость канала, в сторону которого будет подкручиваться баланс,
+ * никоим образом не изменяется. Разве что уменьшается громкость противоположного.
+ * По-хорошему к подкручиваемому каналу должно добавляться до +6 дБ, как это
+ * делает Stereo Balance DSP в моём любимом foobar2000, но пока это затруднительно.
+ * 
+ * А всё потому, что внутренние значения громкости в устройстве измеряются в попугаях,
+ * а не в децибелах.
+ * Калибровочную таблицу бы сделать.
+*/
 void setMasterVolume(byte vol)
 {
-    currentMasterVolume = vol;
-    vol = map(vol, 0, 100, 0, 255);
+    byte levelL, levelR;
+    byte val = (bitRead(deviceSettings, DAC_ONLY_MODE)) ? 0 : map(vol, 0, 100, 0, 255);
+    if (balance == 0)
+        levelL = levelR = val;
+    else
+    {
+        levelL = (balance > 0) ? val : map(balance, -50, 0, 0, val);
+        levelR = (balance < 0) ? val : map(balance, 0, 50, val, 0);  
+        // Возможна путаница левого и правого канала, т.к. при реализации
+        // своей схемы я был вынужден свапнуть их в некоторых участках. 
+    }
     
     Wire.beginTransmission(DIGIPOT_MASTER_I2C);
-    Wire.write(0b10101111); // команда на запись обеих потенциометров
-    Wire.write(vol);
-
-    statusRefresh = 2;
+    Wire.write(0b10101001); // команда на отдельную запись потенциометров, начиная с нулевого
+    Wire.write(levelL);
+    Wire.write(levelR);
     if (Wire.endTransmission() != 0)
         terminate(1);
+        
+    currentMasterVolume = vol;
+    statusRefresh = 1;
 }
 
 void changeVolume(bool dir, bool quick)
@@ -57,6 +80,18 @@ void changeVolume(bool dir, bool quick)
     }
     
     setMasterVolume((uint8_t)newVol);
+}
+
+void setStereoBalance(int8_t val)
+{
+    if (val < -50)
+        balance = -50;
+    else if (val > 50)
+        balance = 50;
+    else
+        balance = val;
+    
+    setMasterVolume(currentMasterVolume);
 }
 
 // управление питанием усилителя

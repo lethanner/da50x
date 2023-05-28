@@ -24,9 +24,9 @@ extern uint16_t inputVoltageADC;
 extern MicroDS18B20 heatsink;
 extern int deviceSettings;
 extern byte undervoltage;
+extern int8_t balance;
 
 void hardware_tick();
-void setMasterVolume(byte val);
 void setMasterVolume(byte vol);
 void changeVolume(bool dir, bool quick = false);
 bool checkInputAvailability(byte src_id);
@@ -34,6 +34,7 @@ void changeAudioInput(byte src_id);
 void setAmplifier(bool state);
 void setMonitoring(bool state);
 void setDACOnlyMode(bool state = true);
+void setStereoBalance(int8_t val);
 uint16_t readDeviceVcc();
 
 #endif

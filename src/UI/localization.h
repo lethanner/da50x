@@ -63,6 +63,9 @@ const char settings_m2[] PROGMEM = "Настр. ФНЧ";
 const char settings_m3[] PROGMEM = "?CТолько ЦАП";
 const char settings_m5[] PROGMEM = "?DБыстрая регулировка";
 
+#define BALANCE "Баланс"
+#define BALANCE_OFFSET 46
+
 #define DAC_ONLY_MARKER "внешн."
 #define DAC_ONLY_MARKER_OFFSET 91
 #define DAC_ONLY_VOLUME_REJECT "Недоступно"
@@ -123,8 +126,12 @@ const char btmenu0_1[] PROGMEM = "Reconnect to last";
 const char settings_m0[] PROGMEM = "?AAuto switch";
 const char settings_m1[] PROGMEM = "?BMonitoring";
 const char settings_m2[] PROGMEM = "LPF cutoff";
+const char settings_m6[] PROGMEM = "Stereo balance";
 const char settings_m3[] PROGMEM = "?CDAC-only mode";
 const char settings_m5[] PROGMEM = "?DQuick volume";
+
+#define BALANCE "Balance"
+#define BALANCE_OFFSET 43
 
 #endif
 
@@ -174,7 +181,7 @@ const char *const null_src_menu[] PROGMEM = {
 };
 
 const char *const settings_menu[] PROGMEM = {
-    settings_m0, settings_m1, settings_m2, settings_m3, settings_m5, settings_m4
+    settings_m0, settings_m1, settings_m2, settings_m6, settings_m3, settings_m5, settings_m4
 };
 
 #endif
