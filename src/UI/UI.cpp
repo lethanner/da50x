@@ -82,13 +82,16 @@ void _hSettings(byte id)
     case 5: // quick volume
         bitWrite(deviceSettings, ALLOW_QUICK_VOLUME, !bitRead(deviceSettings, ALLOW_QUICK_VOLUME));
         break;
-    case 6: // Debug
+    case 6: // stats
+        initializeMenuAction(F(STATISTICS), STATISTICS_OFFSET, ACTION_STATS, 500);
+        screen.setCursor(0, 1); screen.print(F(STATS_BDATE)); screen.print(F(" " __DATE__ " " __TIME__));
+        screen.setCursor(0, 2); screen.print(F(STATS_UPTIME));
+        screen.setCursor(0, 3); screen.print(F(STATS_VOLTAGE));
+        break;
+    case 7: // Debug
         initializeMenuAction(F("Debug"), 49, ACTION_DEBUG, 500);
         screen.setCursor(0, 1);
         screen.print(F("VOLTAGE ADC:"));
-
-        screen.setCursor(0, 2);
-        screen.print(F("MILLIVOLTS:"));
         break;
     }
 }
@@ -104,7 +107,7 @@ bool _hThreeEntries(byte id)
         createMenu(menu_sources, 3, _hSource, F(SOURCE), SOURCE_OFFSET);
         break;
     case 1: // settings
-        createMenu(settings_menu, 7, _hSettings, F(SETTINGS), SETTINGS_OFFSET, false, &deviceSettings);
+        createMenu(settings_menu, 8, _hSettings, F(SETTINGS), SETTINGS_OFFSET, false, &deviceSettings);
         break;
     case 2: // shutdown
         // TODO
@@ -314,12 +317,19 @@ void ui_tick()
                 case ACTION_DEBUG:
                     screen.setCursor(78, 1);
                     screen.print(inputVoltageADC);
-                    screen.setCursor(72, 2);
-                    screen.print(readDeviceVcc());
-                    screen.setCursor(0, 3);
-                    screen.print(undervoltage);
                     
                     reactivateDisplay();
+                    break;
+                case ACTION_STATS:
+                    uint16_t voltage = readDeviceVcc();
+                    screen.setCursor(STATS_UPTIME_OFFSET, 2);
+                    printTimeValue((timer0_millis / 1000 / 60 / 60) % 24); screen.print(':');
+                    printTimeValue((timer0_millis / 1000 / 60) % 60); screen.print(':');
+                    printTimeValue((timer0_millis / 1000) % 60);
+
+                    screen.setCursor(STATS_VOLTAGE_OFFSET, 3);
+                    screen.print(voltage / 1000); screen.print('.');
+                    screen.print(voltage % 1000); screen.print(F("V   "));
                     break;
             }
             actionRefreshTimer = timer0_millis;

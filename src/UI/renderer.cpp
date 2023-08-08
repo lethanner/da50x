@@ -303,3 +303,10 @@ void drawTitle(const __FlashStringHelper *title, uint8_t offset)
     screen.print(title);
     screen.invertText(0);
 }
+
+void printTimeValue(uint16_t value)
+{
+    if (value < 10)
+        screen.print('0');
+    screen.print(value);
+}

@@ -14,6 +14,7 @@
 
 #define ACTION_DEBUG 0
 #define ACTION_BALANCE 1
+#define ACTION_STATS 2
 
 // выводы сдвигового регистра
 #define EXT_BT_ENABLE 7

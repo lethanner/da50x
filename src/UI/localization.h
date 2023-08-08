@@ -62,6 +62,7 @@ const char settings_m1[] PROGMEM = "?BМониторинг";
 const char settings_m2[] PROGMEM = "Настр. ФНЧ";
 const char settings_m3[] PROGMEM = "?CТолько ЦАП";
 const char settings_m5[] PROGMEM = "?DБыстрая регулировка";
+const char settings_m7[] PROGMEM = "Статистика";
 
 #define BALANCE "Баланс"
 #define BALANCE_OFFSET 46
@@ -73,6 +74,14 @@ const char settings_m5[] PROGMEM = "?DБыстрая регулировка";
 #define DAC_ONLY_VOLUME_REJECT_OFFSET 34
 #define DAC_ONLY_VOLUME_REJECT_2_OFFSET 25
 
+#define STATISTICS "Статистика"
+#define STATISTICS_OFFSET 34
+#define STATS_BDATE "ПО:"
+#define STATS_BDATE_OFFSET 24
+#define STATS_UPTIME "Время работы:"
+#define STATS_UPTIME_OFFSET 84
+#define STATS_VOLTAGE "Питание:"
+#define STATS_VOLTAGE_OFFSET 54
 //#define ALL_F____D_UP "Напряжение линии\r\n5В недостаточно\r\nдля работы DA50X.\r\n\nТребуется замена\r\nисточника питания"
 
 #else // Английский язык
@@ -129,6 +138,7 @@ const char settings_m2[] PROGMEM = "LPF cutoff";
 const char settings_m6[] PROGMEM = "Stereo balance";
 const char settings_m3[] PROGMEM = "?CDAC-only mode";
 const char settings_m5[] PROGMEM = "?DQuick volume";
+const char settings_m7[] PROGMEM = "Statistics";
 
 #define BALANCE "Balance"
 #define BALANCE_OFFSET 43
@@ -149,6 +159,14 @@ const char fsrc2[] PROGMEM = "Bluetooth";
 #define DAC_ONLY_VOLUME_REJECT_OFFSET 25
 #define DAC_ONLY_VOLUME_REJECT_2_OFFSET 25
 
+#define STATISTICS "Statistics"
+#define STATISTICS_OFFSET 34
+#define STATS_BDATE "FW:"
+#define STATS_BDATE_OFFSET 24
+#define STATS_UPTIME "Uptime:"
+#define STATS_UPTIME_OFFSET 48
+#define STATS_VOLTAGE "Voltage:"
+#define STATS_VOLTAGE_OFFSET 54
 //#define ALL_F____D_UP "Insufficient 5V\r\nrail voltage has\r\nbeen detected.\r\nDA50X functions\r\ncan not be used.\r\n\nREPLACE POWER SUPPLY"
 
 // Микросдшка и юсб флешка вообще нужны на этом аппарате? Ладно радио, но вот, боюсь, музычка через DFPlayer будет полным извращением.
@@ -181,7 +199,7 @@ const char *const null_src_menu[] PROGMEM = {
 };
 
 const char *const settings_menu[] PROGMEM = {
-    settings_m0, settings_m1, settings_m2, settings_m6, settings_m3, settings_m5, settings_m4
+    settings_m0, settings_m1, settings_m2, settings_m6, settings_m3, settings_m5, settings_m7, settings_m4
 };
 
 #endif
