@@ -6,38 +6,40 @@ byte currentInput = 0;
 byte statusRefresh;
 byte undervoltage = 0;
 bool ampEnabled;
-int8_t hsTemp, _hsTemp;
+int8_t hsTemp;
 uint16_t inputVoltageADC;
 int deviceSettings = 0b00001001; // defaults так сказать
 
 MicroDS18B20 heatsink(A3);
-uint32_t hsRefreshTimer;
+uint32_t hsRefreshTimer, undervoltCheckTimer;
 extern volatile unsigned long timer0_millis;
 
 bool dacOnlyEnabledEarly;
 uint32_t srcCheckTimer;
 byte srcStateCache;
 
-/* 
+bool dtr = false;
+
+/*
  * А может ну его нафиг, этот режим точной подстройки громкости?
  * Он вообще пригодится когда-нибудь?
  * Может, пора бы уже убрать эти хвосты бесполезного кода под него?
- * 
+ *
  * UPD 25.05.2023 - убрал.
-*/
+ */
 
 // установка значения громкости мастер-канала в пределах 0-100%
-/* 
+/*
  * В кой-то веки добавил я этот стереобаланс.
  * Правда вот громкость канала, в сторону которого будет подкручиваться баланс,
  * никоим образом не изменяется. Разве что уменьшается громкость противоположного.
  * По-хорошему к подкручиваемому каналу должно добавляться до +6 дБ, как это
  * делает Stereo Balance DSP в моём любимом foobar2000, но пока это затруднительно.
- * 
+ *
  * А всё потому, что внутренние значения громкости в устройстве измеряются в попугаях,
  * а не в децибелах.
  * Калибровочную таблицу бы сделать.
-*/
+ */
 void setMasterVolume(byte vol)
 {
     byte levelL, levelR;
@@ -47,18 +49,18 @@ void setMasterVolume(byte vol)
     else
     {
         levelL = (balance > 0) ? val : map(balance, -50, 0, 0, val);
-        levelR = (balance < 0) ? val : map(balance, 0, 50, val, 0);  
+        levelR = (balance < 0) ? val : map(balance, 0, 50, val, 0);
         // Возможна путаница левого и правого канала, т.к. при реализации
-        // своей схемы я был вынужден свапнуть их в некоторых участках. 
+        // своей схемы я был вынужден свапнуть их в некоторых участках.
     }
-    
+
     Wire.beginTransmission(DIGIPOT_MASTER_I2C);
     Wire.write(0b10101001); // команда на отдельную запись потенциометров, начиная с нулевого
     Wire.write(levelL);
     Wire.write(levelR);
     if (Wire.endTransmission() != 0)
         terminate(1);
-        
+
     currentMasterVolume = vol;
     statusRefresh = 1;
 }
@@ -78,7 +80,7 @@ void changeVolume(bool dir, bool quick)
         if (newVol > 100)
             newVol = 100;
     }
-    
+
     setMasterVolume((uint8_t)newVol);
 }
 
@@ -90,7 +92,7 @@ void setStereoBalance(int8_t val)
         balance = 50;
     else
         balance = val;
-    
+
     setMasterVolume(currentMasterVolume);
 }
 
@@ -99,7 +101,7 @@ void setAmplifier(bool state)
 {
     if (ampEnabled == state || (bitRead(deviceSettings, DAC_ONLY_MODE) && state))
         return;
-        
+
     // Таков порядок подачи сигналов на микросхему усилителя.
     // Это обеспечит отсутствие щелчка при включении/выключении.
     // Даташит: https://www.st.com/resource/en/datasheet/tda7297.pdf
@@ -154,6 +156,9 @@ void changeAudioInput(byte src_id)
     case SRC_BT:
         bt_restart();
         break;
+    default:
+        src_id = 0;
+        break;
     }
 
     // гасим усилок, когда не используем звук. Нафиг его впустую жарить вместе с током от БП/аккумулятора?
@@ -169,11 +174,12 @@ void changeAudioInput(byte src_id)
 void hardware_tick()
 {
     /* Обновление датчика температуры */
-    if (timer0_millis - hsRefreshTimer > TEMP_REFRESH_INTERVAL_MS) {
-        hsTemp = heatsink.getTemp();
+    if (timer0_millis - hsRefreshTimer > TEMP_REFRESH_INTERVAL_MS)
+    {
+        int8_t _hsTemp = heatsink.getTemp();
         if (hsTemp != _hsTemp)
         {
-            _hsTemp = hsTemp;
+            hsTemp = _hsTemp;
             statusRefresh = 1;
         }
         hsRefreshTimer = timer0_millis;
@@ -211,33 +217,46 @@ void hardware_tick()
 
     /* Флаг о заниженном напряжении питания + автопереход в DAC-only mode при его отсутствии */
     // чёт какой-то некрасивый код получается
-    if (inputVoltageADC > INSUFF_VOLTAGE_ADC)
+    if (timer0_millis - undervoltCheckTimer > UNDERVOLT_CHECK_MS)
     {
-        if (undervoltage == 2)
+        if (inputVoltageADC > INSUFF_VOLTAGE_ADC)
         {
-            undervoltage = 0;
-            setDACOnlyMode(dacOnlyEnabledEarly);
-        }
-        if (inputVoltageADC < UNDERVOLTAGE_ADC)
-        {
-            if (undervoltage != 1)
+            if (undervoltage == 2)
             {
-                undervoltage = 1;
-                if (statusRefresh != 3)
-                    statusRefresh = 1;
+                undervoltage = 0;
+                setDACOnlyMode(dacOnlyEnabledEarly);
+            }
+            if (inputVoltageADC < UNDERVOLTAGE_ADC)
+            {
+                if (undervoltage != 1)
+                {
+                    undervoltage = 1;
+                    if (statusRefresh != 3)
+                        statusRefresh = 1;
+                }
+            }
+            else if (undervoltage != 0)
+            {
+                undervoltage = 0;
+                statusRefresh = 1;
             }
         }
-        else if (undervoltage != 0)
+        else if (undervoltage != 2)
         {
-            undervoltage = 0;
-            statusRefresh = 1;
+            dacOnlyEnabledEarly = bitRead(deviceSettings, DAC_ONLY_MODE);
+            setDACOnlyMode();
+            undervoltage = 2;
         }
+
+        undervoltCheckTimer = timer0_millis;
     }
-    else if (undervoltage != 2)
+
+    /* Состояние USB UART (сигнал DTR) */
+    bool _dtr = !bitRead(PIND, 7);
+    if (dtr != _dtr)
     {
-        dacOnlyEnabledEarly = bitRead(deviceSettings, DAC_ONLY_MODE);
-        setDACOnlyMode();
-        undervoltage = 2;
+        dtr = _dtr;
+        statusRefresh = 1; // и это чисто ради автоматического появления значка с вилкой в строке статуса...
     }
 }
 
@@ -247,7 +266,8 @@ void setMonitoring(bool state)
     bitWrite(deviceSettings, ENABLE_MONITORING, state);
 }
 
-void setDACOnlyMode(bool state) {
+void setDACOnlyMode(bool state)
+{
     if (state == bitRead(deviceSettings, DAC_ONLY_MODE) || (undervoltage == 2 && !state))
         return;
 

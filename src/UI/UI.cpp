@@ -1,9 +1,9 @@
 #include "UI.h"
 
 // переменные для ручки управления
-bool rot_dir;
-uint8_t ctrl_state;
-uint32_t hold_timer;
+volatile bool rot_dir;
+volatile uint8_t ctrl_state;
+volatile uint32_t hold_timer;
 
 uint32_t actTimer;
 uint32_t lastVolumeChangeTimer;
@@ -84,9 +84,13 @@ void _hSettings(byte id)
         break;
     case 6: // stats
         initializeMenuAction(F(STATISTICS), STATISTICS_OFFSET, ACTION_STATS, 500);
-        screen.setCursor(0, 1); screen.print(F(STATS_BDATE)); screen.print(F(" " __DATE__ " " __TIME__));
-        screen.setCursor(0, 2); screen.print(F(STATS_UPTIME));
-        screen.setCursor(0, 3); screen.print(F(STATS_VOLTAGE));
+        screen.setCursor(0, 1);
+        screen.print(F(STATS_BDATE));
+        screen.print(F(" " __DATE__ " " __TIME__));
+        screen.setCursor(0, 2);
+        screen.print(F(STATS_UPTIME));
+        screen.setCursor(0, 3);
+        screen.print(F(STATS_VOLTAGE));
         break;
     case 7: // Debug
         initializeMenuAction(F("Debug"), 49, ACTION_DEBUG, 500);
@@ -156,7 +160,7 @@ void ui_redraw(bool hard)
         screen.setCursor(0, 0);
 
         ui_printPGMLine(pgm_read_word(&(sb_sources[currentInput])));
-        
+
         screen.setCursor(91, 0);
         screen.print(F("%"));
         screen.setCursor(115, 0);
@@ -223,7 +227,8 @@ void ui_tick()
                 screen.setCursor(DAC_ONLY_VOLUME_REJECT_2_OFFSET, 4);
                 screen.print(F(DAC_ONLY_VOLUME_REJECT_2));
             }
-            else {
+            else
+            {
                 screen.setCursor(MASTER_VOLUME_OFFSET, 3);
                 screen.print(F(MASTER_VOLUME));
             }
@@ -243,9 +248,9 @@ void ui_tick()
         case SCREEN_MENU_ACT:
             switch (actionId)
             {
-                case ACTION_BALANCE:
-                    setStereoBalance(rot_dir ? balance + 1 : balance - 1);
-                    break;
+            case ACTION_BALANCE:
+                setStereoBalance(rot_dir ? balance + 1 : balance - 1);
+                break;
             }
             break;
         }
@@ -289,7 +294,8 @@ void ui_tick()
     // TODO: можно и не моргать, если перегретый усилок отключен
     if (hsTemp > TEMP_MAX_WARNING)
     {
-        if (timer0_millis - blinkTimer > 1000) {
+        if (timer0_millis - blinkTimer > 1000)
+        {
             if (temperatureBlink < 2)
                 temperatureBlink = 2;
             else
@@ -314,23 +320,27 @@ void ui_tick()
         {
             switch (actionId)
             {
-                case ACTION_DEBUG:
-                    screen.setCursor(78, 1);
-                    screen.print(inputVoltageADC);
-                    
-                    reactivateDisplay();
-                    break;
-                case ACTION_STATS:
-                    uint16_t voltage = readDeviceVcc();
-                    screen.setCursor(STATS_UPTIME_OFFSET, 2);
-                    printTimeValue((timer0_millis / 1000 / 60 / 60) % 24); screen.print(':');
-                    printTimeValue((timer0_millis / 1000 / 60) % 60); screen.print(':');
-                    printTimeValue((timer0_millis / 1000) % 60);
+            case ACTION_DEBUG:
+                screen.setCursor(78, 1);
+                screen.print(inputVoltageADC);
 
-                    screen.setCursor(STATS_VOLTAGE_OFFSET, 3);
-                    screen.print(voltage / 1000); screen.print('.');
-                    screen.print(voltage % 1000); screen.print(F("V   "));
-                    break;
+                reactivateDisplay();
+                break;
+            case ACTION_STATS:
+                uint16_t voltage = readDeviceVcc();
+                screen.setCursor(STATS_UPTIME_OFFSET, 2);
+                printTimeValue((timer0_millis / 1000 / 60 / 60) % 24);
+                screen.print(':');
+                printTimeValue((timer0_millis / 1000 / 60) % 60);
+                screen.print(':');
+                printTimeValue((timer0_millis / 1000) % 60);
+
+                screen.setCursor(STATS_VOLTAGE_OFFSET, 3);
+                screen.print(voltage / 1000);
+                screen.print('.');
+                screen.print(voltage % 1000);
+                screen.print(F("V   "));
+                break;
             }
             actionRefreshTimer = timer0_millis;
         }
@@ -346,14 +356,14 @@ void ui_refresh(bool fullRefresh)
     {
         switch (actionId)
         {
-            case ACTION_BALANCE:
-                byte x = (balance > 9 || balance < 0) ? 58 : 61; // если 2 или 1 знак в значении, то выравниваем соответствующим образом
-                x = (balance < -9) ? 55 : x; // а это для 3-х знаков, когда появляется минус вместе с двумя знаками
-                screen.setCursor(55, 3);
-                screen.print(F("   ")); // ааааа я вынужден это делать, чтобы остатков символов не было на экране
-                screen.setCursor(x, 3);
-                screen.print(balance);
-                drawBar(balance, 50, 64, 44, true);
+        case ACTION_BALANCE:
+            byte x = (balance > 9 || balance < 0) ? 58 : 61; // если 2 или 1 знак в значении, то выравниваем соответствующим образом
+            x = (balance < -9) ? 55 : x;                     // а это для 3-х знаков, когда появляется минус вместе с двумя знаками
+            screen.setCursor(55, 3);
+            screen.print(F("   ")); // ааааа я вынужден это делать, чтобы остатков символов не было на экране
+            screen.setCursor(x, 3);
+            screen.print(balance);
+            drawBar(balance, 50, 64, 44, true);
         }
         return;
     }
@@ -364,9 +374,10 @@ void ui_refresh(bool fullRefresh)
 
     /* Обновление статусной строки */
     setStatusbarIcon(1, ampEnabled, (bool)undervoltage);
-    setStatusbarIcon(2, checkInputAvailability(SRC_USB));
+    setStatusbarIcon(2, dtr);
 
-    if (!bitRead(deviceSettings, DAC_ONLY_MODE)) {
+    if (!bitRead(deviceSettings, DAC_ONLY_MODE))
+    {
         // значение громкости
         screen.setCursor(73, 0);
         if (currentMasterVolume < 100)
@@ -391,7 +402,7 @@ void ui_refresh(bool fullRefresh)
         screen.setCursor(DAC_ONLY_MARKER_OFFSET, 0);
         screen.print(F(DAC_ONLY_MARKER));
     }
-    
+
     /* Обновление основной части экрана, если надо */
     // пхах, коммент при прошлом коммите забыл.
     // здесь была грубейшая ошибка, которую я заметил только в самом коде, а не при использовании

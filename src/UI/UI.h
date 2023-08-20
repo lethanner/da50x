@@ -4,10 +4,25 @@
 #define USE_MICRO_WIRE
 #include <GyverOLED.h>
 #include "config.h"
-#include "defines.h"
 #include "bitmaps.h"
 #include "localization.h"
 #include "HW/hardware.h"
+
+// текстовое обозначение состояний обработчика ручки управления
+#define CTRL_CLICK 1
+#define CTRL_HOLDING 2
+#define CTRL_ROTATING 3
+
+// идентификаторы типов содержимого на экране
+#define SCREEN_MAIN 0
+#define SCREEN_ACTION 1
+#define SCREEN_MENU 2
+#define SCREEN_MENU_ACT 3
+
+// идентификаторы экранов действий
+#define ACTION_DEBUG 0
+#define ACTION_BALANCE 1
+#define ACTION_STATS 2
 
 extern GyverOLED<SSD1306_128x64, OLED_NO_BUFFER> screen;
 

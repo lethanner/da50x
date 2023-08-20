@@ -1,6 +1,8 @@
 #ifndef _config_h
 #define _config_h
 
+#define ID "DA50X-001" // я специально не назвал этот дефайн как SERIAL
+
 /* Пользовательские настройки */
 //#define RUSSIAN
 #define CTRL_HOLD_TIMEOUT_MS 500
@@ -9,6 +11,7 @@
 #define DISP_AUTO_DIMM_TIMEOUT_MS 15000
 #define TEMP_REFRESH_INTERVAL_MS 2000
 #define QUICK_VOLUME_ACTIVATE_MS 40
+#define UNDERVOLT_CHECK_MS 500
 #define TEMP_MAX_WARNING 69
 #define INIT_VOLUME 25
 

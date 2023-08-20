@@ -12,6 +12,14 @@
 #include <Arduino.h>
 #include <avr/io.h>
 
+// выводы сдвигового регистра
+#define EXT_BT_ENABLE 7
+#define EXT_USB_ENABLE 6
+#define EXT_INDICATOR 5
+#define EXT_MON_ENABLE 2
+#define EXT_AMP_STANDBY 0
+#define EXT_AMP_MUTE 1
+
 #define SOFTSPI_DT_HIGH PORTB |= _BV(PB3)
 #define SOFTSPI_DT_LOW PORTB &= ~_BV(PB3)
 #define SOFTSPI_LT_HIGH PORTB |= _BV(PB4)

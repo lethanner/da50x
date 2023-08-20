@@ -4,25 +4,23 @@
 #include <Arduino.h>
 #include "GyverTimers.h"
 #include "config.h"
-#include "defines.h"
 #include "spiregister.h"
 #include "errorHandler.h"
+#include "UART/RXBuffer.h"
 
 #define BT_TX_HIGH PORTD |= _BV(PD4)
 #define BT_TX_LOW PORTD &= ~_BV(PD4)
 
-// extern int rx_char;
-// extern char bt_rx_buffer[16];
-// extern byte rx_buffer_pos, rx_buff_c_pos;
 extern bool bt_pairing_mode;
 extern bool bt_playback_state;
+extern bool bt_spp_pending;
 extern byte bt_conn_count;
 
 void bt_sendAT(const char *cmd, bool check = true);
+void bt_sendSPP(const char* data);
 void bt_restart();
 void bt_disable();
 void bt_gotoPairingMode();
-void bt_startSPP();
 void bt_update();
 
 inline void bt_uart_initialize()

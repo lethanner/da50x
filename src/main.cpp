@@ -1,11 +1,12 @@
-/* 
+/*
  * Исходный код DA50X, основной файл
  * Полное переписывание альфа-версии.
- * 
+ *
  * Работа начата: 27.08.2021
-*/
+ */
 #include <Arduino.h>
 #include "HW/hardware.h"
+#include "UART/remote.h"
 #include "UI/UI.h"
 
 // Инициализация устройства
@@ -15,12 +16,14 @@ void setup()
   DDRB |= 0b00111000;
   srReset();
 
-  //Serial.begin(115200);
+  /* инициализация удаленного управления */
+  remote_init();
 
   /* инициализация дисплея и отображение логотипа */
   if (!disp_initialize())
   {
-    while(1) {
+    while (1)
+    {
       // Выбросить и никогда не использовать.
       // Немедленно заменить одной строкой после того, как будет доделана вся функция setIndicator.
       setIndicator(true);
@@ -78,7 +81,8 @@ void setup()
   setMonitoring(true);
 
   /* отрисовка главного экрана */
-  ui_redraw(true);
+  // уж лучше сделать это через statusRefresh
+  statusRefresh = 3;
   setIndicator(false);
 }
 
@@ -87,13 +91,18 @@ void loop()
 {
   hardware_tick();
   ui_tick();
+  remote_tick();
 
-  if (statusRefresh == 1) // онли статусбар
-    ui_refresh(false);
-  else if (statusRefresh == 2) // апдейт существующего содержимого на экране
-    ui_refresh();
-  else if (statusRefresh == 3) // фулл перерисовка
-    ui_redraw(true);
-  // TODO: remote refresh
+  if (statusRefresh > 0)
+  {
+    if (statusRefresh == 1) // онли статусбар
+      ui_refresh(false);
+    else if (statusRefresh == 2) // апдейт существующего содержимого на экране
+      ui_refresh();
+    else if (statusRefresh == 3) // фулл перерисовка
+      ui_redraw(true);
+
+    shareDeviceRegisters(statusRefresh);
+  }
   statusRefresh = 0;
 }

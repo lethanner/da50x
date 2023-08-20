@@ -1,15 +1,23 @@
 #ifndef _ltda_h
 #define _ltda_h
 
+// биты конфигурации
 #define ALLOW_AUTOSWITCH 0
 #define ENABLE_MONITORING 1
 #define DAC_ONLY_MODE 2
 #define ALLOW_QUICK_VOLUME 3
 
+// источники под id'ами
+#define SRC_NULL 0
+#define SRC_USB 1
+#define SRC_BT 2
+// #define SRC_FM 3
+// #define SRC_TF 4
+// #define SRC_UDISK 5
+
 #include <Arduino.h>
 #include <microWire.h>
 #include "config.h"
-#include "defines.h"
 #include "spiregister.h"
 #include "microDS18B20.h"
 #include "bluetooth.h"
@@ -25,6 +33,7 @@ extern MicroDS18B20 heatsink;
 extern int deviceSettings;
 extern byte undervoltage;
 extern int8_t balance;
+extern bool dtr;
 
 void hardware_tick();
 void setMasterVolume(byte vol);
