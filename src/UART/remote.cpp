@@ -13,8 +13,8 @@ RXBuffer usb_rx_buffer;
 // char str_ok[] = "OK\r\n";
 // char str_er[] = "ER\r\n";
 char remote_tx_buf[REMOTE_TX_BUFFER];
-//bool tx_data_ready = false;
-// byte tx_buf_pos = 0;
+// bool tx_data_ready = false;
+//  byte tx_buf_pos = 0;
 
 void remote_init()
 {
@@ -88,6 +88,11 @@ void processRemoteCommand(const char *cmd)
     }
     case 'S': // команда смены источника
         changeAudioInput((byte)(cmd[2] - 1));
+        break;
+    case 'L': // команда блокировки передней панели
+        // для случая, когда аппарат будет лежать включенным в рюкзаке и управляться
+        // через (надеюсь, что будущее) приложение. ничего лишнего на нём не нажмется, индикаторы не будут светить в пустоту.
+        lockFrontPanel(cmd[2] == 0x02);
         break;
     }
 }

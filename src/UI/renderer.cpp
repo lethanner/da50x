@@ -310,3 +310,13 @@ void printTimeValue(uint16_t value)
         screen.print('0');
     screen.print(value);
 }
+
+void lockFrontPanel(bool state)
+{
+    setMonitoring(!state);
+    screen.setPower(!state);
+    if (state)
+        PCMSK1 &= ~0b00000101; // прерывания ручки выкл
+    else
+        PCMSK1 |= 0b00000101; // прерывания ручки вкл
+}
