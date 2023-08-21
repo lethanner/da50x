@@ -13,7 +13,6 @@
 
 extern bool bt_pairing_mode;
 extern bool bt_playback_state;
-extern bool bt_spp_pending;
 extern byte bt_conn_count;
 
 void bt_sendAT(const char *cmd, bool check = true);

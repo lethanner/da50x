@@ -46,3 +46,11 @@ void RXBuffer::erasePacket()
         packet_start = true;
     }
 }
+
+void RXBuffer::flush()
+{
+    packet_start = true;
+    packet_ready = false;
+    buffer_pos = 0;
+    memset(data, 0, RX_BUFFER_LENGTH);
+}

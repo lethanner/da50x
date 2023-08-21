@@ -203,13 +203,19 @@ void bt_disable()
     bt_sendAT("CP");
     delay(100);
     extWrite(EXT_BT_ENABLE, false);
+
+    bt_spp_pending = bt_playback_state = false;
     bt_pairing_mode = true; // пока что костыль, чтобы таймер pairing mode не срабатывал при bt_update(), если модуль отключен.
+    bt_conn_count = 0;
+
+    bt_rx_buffer.flush();
 }
 
 void bt_restart()
 {
     extWrite(EXT_BT_ENABLE, false);
     delay(100);
+    bt_rx_buffer.flush();
     extWrite(EXT_BT_ENABLE, true);
 
     bt_conn_count = 0;
