@@ -24,6 +24,7 @@ const char fsrc1[] PROGMEM = "USB ЦАП";
 //const char fsrc5[] PROGMEM = "USB-накопитель";
 
 #define SOURCE "Источник"
+#define SOURCE_OFFSET 40
 
 #define WAIT "Подождите..."
 #define WAIT_OFFSET 28
@@ -62,6 +63,7 @@ const char settings_m1[] PROGMEM = "?BМониторинг";
 const char settings_m2[] PROGMEM = "Настр. ФНЧ";
 const char settings_m3[] PROGMEM = "?CТолько ЦАП";
 const char settings_m5[] PROGMEM = "?DБыстрая регулировка";
+const char settings_m6[] PROGMEM = "Стереобаланс";
 const char settings_m7[] PROGMEM = "Статистика";
 
 #define BALANCE "Баланс"
@@ -143,15 +145,6 @@ const char settings_m7[] PROGMEM = "Statistics";
 #define BALANCE "Balance"
 #define BALANCE_OFFSET 43
 
-#endif
-
-const char settings_m4[] PROGMEM = "Debug";
-const char fsrc2[] PROGMEM = "Bluetooth";
-#define BLUETOOTH_R "Bluetooth(R)"
-#define BLUETOOTH_OFFSET 28
-#define BT_TITLE "Bluetooth"
-#define BT_TITLE_OFFSET 37
-
 #define DAC_ONLY_MARKER "DAC-only"
 #define DAC_ONLY_MARKER_OFFSET 79
 #define DAC_ONLY_VOLUME_REJECT "Not available"
@@ -168,6 +161,15 @@ const char fsrc2[] PROGMEM = "Bluetooth";
 #define STATS_VOLTAGE "Voltage:"
 #define STATS_VOLTAGE_OFFSET 54
 //#define ALL_F____D_UP "Insufficient 5V\r\nrail voltage has\r\nbeen detected.\r\nDA50X functions\r\ncan not be used.\r\n\nREPLACE POWER SUPPLY"
+
+#endif
+
+const char settings_m4[] PROGMEM = "Debug";
+const char fsrc2[] PROGMEM = "Bluetooth";
+#define BLUETOOTH_R "Bluetooth(R)"
+#define BLUETOOTH_OFFSET 28
+#define BT_TITLE "Bluetooth"
+#define BT_TITLE_OFFSET 37
 
 // Микросдшка и юсб флешка вообще нужны на этом аппарате? Ладно радио, но вот, боюсь, музычка через DFPlayer будет полным извращением.
 const char src0[] PROGMEM = "null";
